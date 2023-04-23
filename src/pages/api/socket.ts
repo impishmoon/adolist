@@ -7,7 +7,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const io = new Server((res.socket as any).server) as any;
+  const io = new Server((res.socket as any).server);
   (res.socket as any).server.io = io;
 
   res.end();
