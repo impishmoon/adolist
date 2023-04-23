@@ -1,3 +1,14 @@
 .root{
-  background: red;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  .container{
+    width: fit-content;
+    padding: 6px;
+    border: 1px solid rgb(194, 194, 194);
+    border-radius: 4px;
+  }
 }

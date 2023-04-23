@@ -6,7 +6,11 @@ type Props = {
 };
 
 const LayoutContainer: FC<Props> = ({ children }) => {
-  return <div className={css.root}>{children}</div>;
+  return (
+    <div className={css.root}>
+      <div className={css.container}>{children}</div>
+    </div>
+  );
 };
 
 export default LayoutContainer;

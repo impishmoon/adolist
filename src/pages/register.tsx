@@ -2,11 +2,11 @@ import LayoutContainer from "@/components/layout/container";
 import { Button, FormControl, Grid, TextField } from "@mui/material";
 import Link from "next/link";
 
-const LoginPage = () => {
+const RegisterPage = () => {
   return (
     <>
       <LayoutContainer>
-        <div>Login</div>
+        <div>Register</div>
         <form>
           <FormControl required fullWidth margin="normal">
             <TextField required type="text" label="Username" />
@@ -15,15 +15,18 @@ const LoginPage = () => {
             <TextField required type="password" label="Password" />
           </FormControl>
           <FormControl fullWidth margin="normal">
+            <TextField type="email" label="Email" />
+          </FormControl>
+          <FormControl fullWidth margin="normal">
             <div>
               <Button variant="contained" color="success">
-                Login
+                Register
               </Button>
             </div>
           </FormControl>
           <FormControl fullWidth margin="normal">
-            <Link href="/register">
-              <Button variant="contained">Register</Button>
+            <Link href="/login">
+              <Button variant="contained">Login</Button>
             </Link>
           </FormControl>
         </form>
@@ -32,4 +35,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
