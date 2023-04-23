@@ -10,5 +10,3 @@ const LayoutContainer: FC<Props> = ({ children }) => {
 };
 
 export default LayoutContainer;
-
-//test
