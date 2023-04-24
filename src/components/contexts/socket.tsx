@@ -29,14 +29,11 @@ const SocketContextProvider: FC<Props> = ({ children }) => {
     });
 
     socket.on("connect", () => {
-      //socket.emit("set-account", )
+      const cookies = cookie.parse(document.cookie);
+      if ("account" in cookies) {
+        socket.emit("setAccount", { accountToken: cookies.account });
+      }
       console.log("socket connected");
-    });
-
-    socket.on("setAccount", (accountData) => {
-      cookie.serialize("account", accountData.account, {
-        expires: new Date(Date.now() + 60 * 60 * 24 * 365),
-      });
     });
 
     setSocket(socket);
