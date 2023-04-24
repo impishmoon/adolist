@@ -7,9 +7,11 @@ import {
   useEffect,
   useState,
 } from "react";
+import cookie from "cookie";
+import { SocketEmitEvents, SocketListenEvents } from "@/types/socket-events";
 
 type ContextType = {
-  socket: Socket | undefined;
+  socket: Socket<SocketListenEvents, SocketEmitEvents> | undefined;
 };
 
 export const SocketContext = createContext<ContextType>({} as ContextType);
@@ -22,10 +24,22 @@ const SocketContextProvider: FC<Props> = ({ children }) => {
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    (async () => {
-      await fetch("/api/socket");
-      setSocket(io());
-    })();
+    const socket: Socket<SocketListenEvents, SocketEmitEvents> = io({
+      path: "/api/socketio",
+    });
+
+    socket.on("connect", () => {
+      //socket.emit("set-account", )
+      console.log("socket connected");
+    });
+
+    socket.on("setAccount", (accountData) => {
+      cookie.serialize("account", accountData.account, {
+        expires: new Date(Date.now() + 60 * 60 * 24 * 365),
+      });
+    });
+
+    setSocket(socket);
   }, []);
 
   return (
