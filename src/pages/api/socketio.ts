@@ -2,8 +2,8 @@ import { NextApiResponseServerIO } from "@/types/next";
 import type { NextApiRequest } from "next";
 import { Server as ServerIO } from "socket.io";
 import { Server as NetServer } from "http";
-import SocketAddListeners from "@/serverlib/socket/socket-add-listeners";
-import { SocketEmitEvents, SocketListenEvents } from "@/types/socket-events";
+import SocketAddListeners from "@/serverlib/socket/socketAddListener";
+import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 
 export const config = {
   api: {

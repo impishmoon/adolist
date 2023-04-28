@@ -1,13 +1,14 @@
 import { FC } from "react";
-import css from "./list-item.module.scss";
+import css from "./listItem.module.scss";
 import { Box, Checkbox, TextareaAutosize } from "@mui/material";
 import TaskType from "@/types/client/board/task";
 
 type Props = {
   data?: TaskType;
+  onClick: () => void;
 };
 
-const ListItem: FC<Props> = ({ data }) => {
+const ListItem: FC<Props> = ({ data, onClick }) => {
   const renderSideItem = () => {
     if (data) {
       return (
@@ -25,10 +26,14 @@ const ListItem: FC<Props> = ({ data }) => {
   };
 
   return (
-    <div className={css.root}>
+    <div className={css.root} onClick={onClick}>
       <div className={css.sideItem}>{renderSideItem()}</div>
       <div className={css.text}>
-        <TextareaAutosize placeholder="An awesome task" value={data?.text} />
+        <TextareaAutosize
+          required={data != null}
+          placeholder="An awesome task"
+          defaultValue={data?.text}
+        />
       </div>
     </div>
   );

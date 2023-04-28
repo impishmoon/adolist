@@ -54,7 +54,7 @@ const Page: NextPage<Props> = ({ username, boards }) => {
       <Container style={{ marginTop: "20px" }}>
         <Grid container justifyContent="center">
           <Grid item xs={6}>
-            <Board />
+            <Board createBoard />
           </Grid>
         </Grid>
       </Container>

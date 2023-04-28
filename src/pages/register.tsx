@@ -1,10 +1,9 @@
 import LayoutContainer from "@/components/layout/container";
 import Router from "next/router";
-import { Button, FormControl, Grid, TextField } from "@mui/material";
+import { Button, FormControl, TextField } from "@mui/material";
 import Link from "next/link";
 import css from "./register.module.scss";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { ApiResponse } from "@/types/api-response";
+import { useForm, Controller } from "react-hook-form";
 import { useSocket } from "@/components/contexts/socket";
 
 type FormData = {
@@ -25,7 +24,7 @@ const RegisterPage = () => {
 
     socket.once("apiResponse", async (response) => {
       if (!response.error) {
-        await fetch("/api/set-cookie", {
+        await fetch("/api/setCookie", {
           headers: {},
           body: JSON.stringify(data),
           method: "POST",

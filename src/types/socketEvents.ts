@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/types/api-response";
+import { ApiResponse } from "@/types/apiResponse";
 import RegisterData from "@/types/api/register";
 import SetAccountData from "./api/setAccount";
 

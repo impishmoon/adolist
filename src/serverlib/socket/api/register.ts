@@ -1,7 +1,7 @@
 import { getToken } from "@/serverlib/auth";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import RegisterData from "@/types/api/register";
-import { SocketEmitEvents, SocketListenEvents } from "@/types/socket-events";
+import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Socket } from "socket.io";
 
 const SocketRegister = async (

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import ListItem from "./list-item";
+import ListItem from "./listItem";
 import css from "./list.module.scss";
 import BoardType from "@/types/client/board/board";
 
@@ -9,13 +9,13 @@ type Props = {
 
 const List: FC<Props> = ({ data }) => {
   const renderItems = data.tasks.map((task) => {
-    return <ListItem key={task.id} data={task} />;
+    return <ListItem key={task.id} data={task} onClick={() => {}} />;
   });
 
   return (
     <div className={css.root}>
       {renderItems}
-      <ListItem />
+      <ListItem onClick={() => {}} />
     </div>
   );
 };

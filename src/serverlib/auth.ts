@@ -1,5 +1,5 @@
 import cryptoJs from "crypto-js";
-import { MAX_AGE, setTokenCookie, getTokenCookie } from "./auth-cookies";
+import { MAX_AGE, setTokenCookie, getTokenCookie } from "./authCookies";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET;

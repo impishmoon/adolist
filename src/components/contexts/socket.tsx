@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import cookie from "cookie";
-import { SocketEmitEvents, SocketListenEvents } from "@/types/socket-events";
+import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 
 type ContextType = {
   socket: Socket<SocketListenEvents, SocketEmitEvents> | undefined;

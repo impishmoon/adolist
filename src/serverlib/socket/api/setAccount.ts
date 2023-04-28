@@ -1,6 +1,6 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
 import SetAccountData from "@/types/api/setAccount";
-import { SocketEmitEvents, SocketListenEvents } from "@/types/socket-events";
+import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Socket } from "socket.io";
 
 const SocketSetAccount = async (
