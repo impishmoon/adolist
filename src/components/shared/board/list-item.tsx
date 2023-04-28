@@ -1,12 +1,13 @@
 import { FC } from "react";
 import css from "./list-item.module.scss";
+import { TextareaAutosize } from "@mui/material";
 
 const ListItem: FC = () => {
   return (
     <div className={css.root}>
       <div className={css.sideItem}>+</div>
       <div className={css.text}>
-        <textarea placeholder="An awesome task" />
+        <TextareaAutosize placeholder="An awesome task" />
       </div>
     </div>
   );
