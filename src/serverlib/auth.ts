@@ -42,7 +42,7 @@ export function decryptAccountToken(token: string) {
   return session;
 }
 
-export function getLoginSession(req: NextApiRequest) {
+export function getLoginSession(req: any) {
   const token = getTokenCookie(req);
 
   if (!token) return;

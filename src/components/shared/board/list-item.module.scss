@@ -1,0 +1,27 @@
+.root {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+
+  &:focus-within {
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+  }
+
+  .sideItem {}
+
+  .text {
+    flex: 1;
+
+    textarea {
+      resize: none;
+      background: none;
+      border: none;
+      outline: none;
+      width: 100%;
+    }
+  }
+}
