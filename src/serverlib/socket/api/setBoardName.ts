@@ -2,34 +2,23 @@ import { decryptAccountToken, getToken } from "@/serverlib/auth";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
-import CreateBoardData from "@/types/api/createBoard";
+import SetBoardNameData from "@/types/api/setBoardName";
 import BoardType from "@/types/client/board/board";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Socket } from "socket.io";
 
-const SocketCreateBoard = async (
+const SocketSetBoardName = async (
   socket: Socket<SocketEmitEvents, SocketListenEvents>,
-  data: CreateBoardData
+  data: SetBoardNameData
 ) => {
   const session = decryptAccountToken(data.auth);
   const user = await UsersSQL.getById(session.id);
 
   if (user) {
-    const boardId = await BoardsSQL.create(user.id, data.data.name);
-    await TasksSQL.create(boardId, user.id, data.data.tasks);
+    await BoardsSQL.setName(data.id, data.name);
 
-    const result: BoardType[] = [];
-
-    const boards = await BoardsSQL.getByOwnerId(user.id);
-    for (const board of boards) {
-      result.push({
-        ...board,
-        tasks: await TasksSQL.getByOwnerId(board.id),
-      });
-    }
-
-    socket.emit("setBoards", result);
+    //TODO: Send board update to all sockets belonging to users that can see the board
   }
 };
 
-export default SocketCreateBoard;
+export default SocketSetBoardName;

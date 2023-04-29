@@ -3,6 +3,9 @@ import SocketRegister from "./api/register";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import SocketSetAccount from "./api/setAccount";
 import SocketCreateBoard from "./api/createBoard";
+import SocketSetBoardName from "./api/setBoardName";
+import SocketSetTaskText from "./api/setTaskText";
+import SocketSetTaskChecked from "./api/setTaskChecked";
 
 const SocketAddListeners = (
   io: Server<SocketEmitEvents, SocketListenEvents>
@@ -13,6 +16,10 @@ const SocketAddListeners = (
       socket.on("register", (data) => SocketRegister(socket, data));
       socket.on("setAccount", (data) => SocketSetAccount(socket, data));
       socket.on("createBoard", (data) => SocketCreateBoard(socket, data));
+
+      socket.on("setBoardName", (data) => SocketSetBoardName(socket, data));
+      socket.on("setTaskText", (data) => SocketSetTaskText(socket, data));
+      socket.on("setTaskChecked", (data) => SocketSetTaskChecked(socket, data));
     }
   );
 };

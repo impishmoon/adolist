@@ -1,4 +1,11 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  FC,
+  ReactNode,
+} from "react";
 
 type ContextType = {
   props: any;
@@ -7,7 +14,12 @@ type ContextType = {
 
 export const SSRFetcherContext = createContext<ContextType>({} as ContextType);
 
-export default function SSRFetcherProvider({ children, pageProps }) {
+type Props = {
+  children: ReactNode;
+  pageProps: any;
+};
+
+const SSRFetcherProvider: FC<Props> = ({ children, pageProps }) => {
   const [pagePropsState, setPagePropsState] = useState(pageProps || {});
 
   useEffect(() => {
@@ -21,7 +33,9 @@ export default function SSRFetcherProvider({ children, pageProps }) {
       {children}
     </SSRFetcherContext.Provider>
   );
-}
+};
+
+export default SSRFetcherProvider;
 
 export const useSSRFetcher = () => {
   return useContext(SSRFetcherContext);

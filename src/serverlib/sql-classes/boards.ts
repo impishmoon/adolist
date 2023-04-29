@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import psqlQuery, { psqlInsert } from "@/serverlib/psql-conn";
+import psqlQuery, { psqlInsert, psqlUpdate } from "@/serverlib/psql-conn";
 import { randomId } from "@/sharedlib/essentials";
 import BoardType from "@/types/server/board/board";
 
@@ -18,6 +18,18 @@ export default class BoardsSQL {
     ])) as any;
 
     return data as BoardType[];
+  }
+
+  static async setName(id: string, name: string) {
+    await psqlUpdate(
+      "boards",
+      {
+        name,
+      },
+      {
+        id,
+      }
+    );
   }
 
   static async create(ownerid: string, name: string) {

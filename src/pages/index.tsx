@@ -16,6 +16,7 @@ import Board from "@/components/shared/board";
 import BoardType from "@/types/client/board/board";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
+import IndexProps, { IndexPropsType } from "@/types/indexProps";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,13 +48,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-type Props = {
-  username?: string;
-  boards?: BoardType[];
-};
-
-const Page: NextPage<Props> = () => {
-  const { props }: { props: Props } = useSSRFetcher();
+const Page: NextPage<IndexProps> = () => {
+  const { props }: IndexPropsType = useSSRFetcher();
   const { boards } = props;
 
   const renderBoards = boards?.map((board) => {

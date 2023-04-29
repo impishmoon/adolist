@@ -7,12 +7,15 @@ import BoardType from "@/types/client/board/board";
 import { getDefaultData, useBoard } from "@/components/contexts/board";
 import { useSocket } from "@/components/contexts/socket";
 import getAuthCookie from "@/clientlib/getAuthCookie";
+import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
+import { IndexPropsType } from "@/types/indexProps";
 
 export type Props = {
   data?: BoardType;
 };
 
 const BoardWithoutCtx: FC<Props> = ({ data }) => {
+  const { props, setProps }: IndexPropsType = useSSRFetcher();
   const { socket } = useSocket();
   const { createBoard, forcedData, setForcedData, formData } = useBoard();
   const { control, handleSubmit } = formData;
@@ -29,7 +32,7 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
     setForcedData(getDefaultData());
   });
 
-  const test = () => {
+  const onCancel = () => {
     setForcedData(getDefaultData());
   };
 
@@ -41,6 +44,22 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
       newForcedData.name = e.target.value;
       setForcedData(newForcedData);
     } else {
+      const newProps = { ...props };
+
+      if (!newProps.boards) return;
+
+      const foundBoard = newProps.boards.find((board) => board.id === data!.id);
+      if (!foundBoard) return;
+
+      foundBoard.name = e.target.value;
+
+      setProps(newProps);
+
+      socket?.emit("setBoardName", {
+        auth: getAuthCookie(),
+        id: data!.id,
+        name: e.target.value,
+      });
     }
   };
 
@@ -60,13 +79,13 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
               onChange={onNameChange}
             />
           </div>
-          <div>{useData && <List data={useData} />}</div>
+          <div>{useData && <List data={useData} boardId={useData?.id} />}</div>
         </CardContent>
         {createBoard && (
           <CardActions>
             <Grid container justifyContent={"space-between"}>
               <Button type="submit">Create</Button>
-              <Button type="reset" color="warning" onClick={test}>
+              <Button type="reset" color="warning" onClick={onCancel}>
                 Cancel
               </Button>
             </Grid>

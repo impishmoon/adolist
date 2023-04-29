@@ -4,12 +4,19 @@ import { Box, Checkbox, TextareaAutosize } from "@mui/material";
 import TaskType from "@/types/client/board/task";
 import { useBoard } from "@/components/contexts/board";
 import { randomId } from "@/sharedlib/essentials";
+import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
+import { IndexPropsType } from "@/types/indexProps";
+import { useSocket } from "@/components/contexts/socket";
+import getAuthCookie from "@/clientlib/getAuthCookie";
 
 type Props = {
   data?: TaskType;
+  boardId: string;
 };
 
-const ListItem: FC<Props> = ({ data }) => {
+const ListItem: FC<Props> = ({ data, boardId }) => {
+  const { props, setProps }: IndexPropsType = useSSRFetcher();
+  const { socket } = useSocket();
   const { createBoard, forcedData, setForcedData } = useBoard();
 
   const onClick = () => {
@@ -28,6 +35,7 @@ const ListItem: FC<Props> = ({ data }) => {
       });
       setForcedData(newForcedData);
     } else {
+      //TODO: creating a new task
     }
   };
 
@@ -40,6 +48,25 @@ const ListItem: FC<Props> = ({ data }) => {
       foundTask && (foundTask.checked = e.target.checked);
       setForcedData(newForcedData);
     } else {
+      const newProps = { ...props };
+
+      if (!newProps.boards) return;
+
+      const foundBoard = newProps.boards.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      const foundTask = foundBoard.tasks.find((task) => task.id === data?.id);
+      if (!foundTask) return;
+
+      foundTask.checked = e.target.checked;
+
+      setProps(newProps);
+
+      socket?.emit("setTaskChecked", {
+        auth: getAuthCookie(),
+        id: data!.id,
+        checked: e.target.checked,
+      });
     }
   };
 
@@ -52,6 +79,25 @@ const ListItem: FC<Props> = ({ data }) => {
       foundTask && (foundTask.text = e.target.value);
       setForcedData(newForcedData);
     } else {
+      const newProps = { ...props };
+
+      if (!newProps.boards) return;
+
+      const foundBoard = newProps.boards.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      const foundTask = foundBoard.tasks.find((task) => task.id === data?.id);
+      if (!foundTask) return;
+
+      foundTask.text = e.target.value;
+
+      setProps(newProps);
+
+      socket?.emit("setTaskText", {
+        auth: getAuthCookie(),
+        id: data!.id,
+        text: e.target.value,
+      });
     }
   };
 
