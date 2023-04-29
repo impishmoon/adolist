@@ -13,6 +13,9 @@ import {
   TextField,
 } from "@mui/material";
 import Board from "@/components/shared/board";
+import BoardType from "@/types/client/board/board";
+import TasksSQL from "@/serverlib/sql-classes/tasks";
+import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +29,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const account = await UsersSQL.getById(session.id);
 
     username = account.username;
-    boards = await BoardsSQL.getByOwnerId(account.id);
+    boards = [];
+    const serverBoards = await BoardsSQL.getByOwnerId(account.id);
+    for (const serverBoard of serverBoards) {
+      boards.push({
+        ...serverBoard,
+        tasks: await TasksSQL.getByOwnerId(serverBoard.id),
+      });
+    }
   }
 
   return {
@@ -39,10 +49,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 type Props = {
   username?: string;
-  boards?: any;
+  boards?: BoardType[];
 };
 
-const Page: NextPage<Props> = ({ username, boards }) => {
+const Page: NextPage<Props> = () => {
+  const { props }: { props: Props } = useSSRFetcher();
+  const { boards } = props;
+
+  const renderBoards = boards?.map((board) => {
+    return (
+      <Grid key={board.id} item xs={6} lg={3}>
+        <Board data={board} />
+      </Grid>
+    );
+  });
+
   return (
     <>
       <Head>
@@ -52,10 +73,13 @@ const Page: NextPage<Props> = ({ username, boards }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container style={{ marginTop: "20px" }}>
-        <Grid container justifyContent="center">
-          <Grid item xs={6}>
-            <Board createBoard />
+        <Grid container>
+          <Grid container justifyContent="center">
+            <Grid item xs={6}>
+              <Board createBoard />
+            </Grid>
           </Grid>
+          <Grid container>{renderBoards}</Grid>
         </Grid>
       </Container>
     </>

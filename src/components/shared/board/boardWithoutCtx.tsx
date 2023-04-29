@@ -5,16 +5,29 @@ import Input from "@/components/shared/input";
 import List from "@/components/shared/board/list";
 import BoardType from "@/types/client/board/board";
 import { getDefaultData, useBoard } from "@/components/contexts/board";
+import { useSocket } from "@/components/contexts/socket";
+import getAuthCookie from "@/clientlib/getAuthCookie";
 
 export type Props = {
   data?: BoardType;
 };
 
 const BoardWithoutCtx: FC<Props> = ({ data }) => {
+  const { socket } = useSocket();
   const { createBoard, forcedData, setForcedData, formData } = useBoard();
   const { control, handleSubmit } = formData;
 
-  const onSubmit = handleSubmit(async (data) => {});
+  const onSubmit = handleSubmit(async (data) => {
+    //dont use data because we are dealing with a dynamic form and i cant be bothered to figure out how to make react-form-hook work with a dynamic number of inputs
+
+    if (!socket) return;
+
+    socket.emit("createBoard", {
+      auth: getAuthCookie(),
+      data: forcedData,
+    });
+    setForcedData(getDefaultData());
+  });
 
   const test = () => {
     setForcedData(getDefaultData());
@@ -46,31 +59,19 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
               value={useData?.name}
               onChange={onNameChange}
             />
-            {/* <Controller
-              name="name"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input
-                  className={css.input}
-                  required
-                  type="text"
-                  placeholder="Title"
-                  defaultValue={useData?.name}
-                />
-              )}
-            /> */}
           </div>
           <div>{useData && <List data={useData} />}</div>
         </CardContent>
-        <CardActions>
-          <Grid container justifyContent={"space-between"}>
-            <Button type="submit">Create</Button>
-            <Button type="reset" color="warning" onClick={test}>
-              Cancel
-            </Button>
-          </Grid>
-        </CardActions>
+        {createBoard && (
+          <CardActions>
+            <Grid container justifyContent={"space-between"}>
+              <Button type="submit">Create</Button>
+              <Button type="reset" color="warning" onClick={test}>
+                Cancel
+              </Button>
+            </Grid>
+          </CardActions>
+        )}
       </Card>
     </form>
   );

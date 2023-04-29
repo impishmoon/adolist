@@ -13,7 +13,9 @@ export const pool = new Pool({
   idleTimeoutMillis: 3000,
 });
 
-const psqlQuery = (query: string, params: (number | string | undefined)[]) => {
+type AcceptedType = number | string | boolean | undefined;
+
+const psqlQuery = (query: string, params: AcceptedType[]) => {
   return new Promise(async (resolve) => {
     await pool.query(query, params, (error, results) => {
       if (error) throw error;
@@ -26,7 +28,7 @@ export default psqlQuery;
 
 export const psqlInsert = async (
   table: string,
-  values: { [test: string]: string | number | undefined }
+  values: { [test: string]: AcceptedType }
 ) => {
   let valuesFillin = [];
 
@@ -42,10 +44,39 @@ export const psqlInsert = async (
   await psqlQuery(query, valuesValues);
 };
 
+export const psqlInsertMultiple = async (
+  table: string,
+  values: { [test: string]: AcceptedType }[]
+) => {
+  let valuesFillin = [];
+  let valuesValues: any[] = [];
+
+  for (const value of values) {
+    valuesValues = [...valuesValues, ...Object.values(value)];
+    for (let i = 0; i < valuesValues.length; i++) {
+      valuesFillin.push(`$${i + 1}`);
+    }
+  }
+
+  const valuesLength = Object.values(values[0]).length;
+  const valueGroups = values.map((innerValues, valuesIndex) => {
+    return `(${Object.values(innerValues).map(
+      (_, innerValueIndex) =>
+        `$${innerValueIndex + 1 + valuesIndex * valuesLength}`
+    )})`;
+  });
+
+  let query = `INSERT INTO ${table} (${Object.keys(values[0])
+    .join(", ")
+    .toLowerCase()}) VALUES ${valueGroups.join(", ")}`;
+
+  await psqlQuery(query, valuesValues);
+};
+
 export const psqlUpdate = async (
   table: string,
-  values: { [test: string]: string | number },
-  where: { [test: string]: string | number }
+  values: { [test: string]: AcceptedType },
+  where: { [test: string]: AcceptedType }
 ) => {
   let finalValues = [];
   let updateValues = [];
