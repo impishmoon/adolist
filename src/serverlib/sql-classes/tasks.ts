@@ -15,9 +15,10 @@ export default class TasksSQL {
   }
 
   static async getByOwnerId(id: string) {
-    const data = (await psqlQuery("SELECT * FROM tasks WHERE ownerid=$1", [
-      id,
-    ])) as any;
+    const data = (await psqlQuery(
+      "SELECT * FROM tasks WHERE ownerid=$1 ORDER BY listorder",
+      [id]
+    )) as any;
 
     return data;
   }

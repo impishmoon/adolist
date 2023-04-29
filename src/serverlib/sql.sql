@@ -1,0 +1,41 @@
+CREATE TABLE "boards" (
+	"id" VARCHAR(16) NOT NULL,
+	"ownerid" VARCHAR(16) NOT NULL,
+	"name" VARCHAR(128) NOT NULL,
+	"timecreated" NUMERIC NOT NULL,
+	"timeupdated" NUMERIC NOT NULL,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "FK__users" FOREIGN KEY ("ownerid") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
+);
+
+CREATE TABLE "boardshares" (
+	"id" VARCHAR(16) NOT NULL,
+	"boardid" VARCHAR(16) NOT NULL,
+	"userid" VARCHAR(16) NOT NULL,
+	"timecreated" NUMERIC NOT NULL,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "FK__boards" FOREIGN KEY ("boardid") REFERENCES "boards" ("id") ON UPDATE NO ACTION ON DELETE CASCADE,
+	CONSTRAINT "FK__users" FOREIGN KEY ("userid") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
+);
+
+CREATE TABLE "tasks" (
+	"id" VARCHAR(16) NOT NULL,
+	"ownerid" VARCHAR(16) NOT NULL,
+	"text" TEXT NOT NULL,
+	"checked" BOOLEAN NOT NULL,
+	"timecreated" NUMERIC NOT NULL,
+	"timeupdated" NUMERIC NOT NULL,
+	"updatedby" VARCHAR(16) NOT NULL,
+	"listorder" NUMERIC NOT NULL,
+	PRIMARY KEY ("id"),
+	CONSTRAINT "FK__boards" FOREIGN KEY ("ownerid") REFERENCES "boards" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
+);
+
+CREATE TABLE "users" (
+	"id" VARCHAR(16) NOT NULL,
+	"username" VARCHAR(64) NOT NULL,
+	"password" VARCHAR(128) NOT NULL,
+	"email" VARCHAR(128) NULL DEFAULT NULL,
+	"timecreated" NUMERIC NOT NULL,
+	PRIMARY KEY ("id")
+);
