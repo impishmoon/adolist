@@ -17,6 +17,8 @@ type FormData = {
 };
 
 type ContextType = {
+  createBoard: boolean;
+
   forcedData: BoardType;
   setForcedData: (newData: BoardType) => void;
 
@@ -27,15 +29,18 @@ export const BoardContext = createContext<ContextType>({} as ContextType);
 
 type Props = {
   children: ReactNode;
+  createBoard: boolean;
 };
 
-const BoardContextProvider: FC<Props> = ({ children }) => {
+const BoardContextProvider: FC<Props> = ({ children, createBoard }) => {
   const formData = useForm<FormData>();
 
   const [forcedData, setForcedData] = useState<BoardType>(getDefaultData());
 
   return (
-    <BoardContext.Provider value={{ forcedData, setForcedData, formData }}>
+    <BoardContext.Provider
+      value={{ createBoard, forcedData, setForcedData, formData }}
+    >
       {children}
     </BoardContext.Provider>
   );

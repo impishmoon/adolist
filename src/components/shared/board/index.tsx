@@ -4,9 +4,13 @@ import BoardWithoutCtx, {
   Props,
 } from "@/components/shared/board/boardWithoutCtx";
 
-const Board: FC<Props> = (props) => {
+type WithCtxProps = {
+  createBoard: boolean;
+};
+
+const Board: FC<Props & WithCtxProps> = (props) => {
   return (
-    <BoardContextProvider>
+    <BoardContextProvider createBoard={props.createBoard}>
       <BoardWithoutCtx {...props}></BoardWithoutCtx>
     </BoardContextProvider>
   );

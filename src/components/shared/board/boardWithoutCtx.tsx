@@ -5,15 +5,13 @@ import Input from "@/components/shared/input";
 import List from "@/components/shared/board/list";
 import BoardType from "@/types/client/board/board";
 import { getDefaultData, useBoard } from "@/components/contexts/board";
-import { Controller } from "react-hook-form";
 
 export type Props = {
   data?: BoardType;
-  createBoard: boolean;
 };
 
-const BoardWithoutCtx: FC<Props> = ({ createBoard, data }) => {
-  const { forcedData, setForcedData, formData } = useBoard();
+const BoardWithoutCtx: FC<Props> = ({ data }) => {
+  const { createBoard, forcedData, setForcedData, formData } = useBoard();
   const { control, handleSubmit } = formData;
 
   const onSubmit = handleSubmit(async (data) => {});
@@ -24,6 +22,15 @@ const BoardWithoutCtx: FC<Props> = ({ createBoard, data }) => {
 
   const isUsingForcedData = createBoard;
 
+  const onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (isUsingForcedData) {
+      const newForcedData = { ...forcedData };
+      newForcedData.name = e.target.value;
+      setForcedData(newForcedData);
+    } else {
+    }
+  };
+
   const useData = isUsingForcedData ? forcedData : data;
 
   return (
@@ -31,7 +38,15 @@ const BoardWithoutCtx: FC<Props> = ({ createBoard, data }) => {
       <Card key={useData?.id} variant="outlined">
         <CardContent>
           <div>
-            <Controller
+            <Input
+              className={css.input}
+              required
+              type="text"
+              placeholder="Title"
+              value={useData?.name}
+              onChange={onNameChange}
+            />
+            {/* <Controller
               name="name"
               control={control}
               rules={{ required: true }}
@@ -44,7 +59,7 @@ const BoardWithoutCtx: FC<Props> = ({ createBoard, data }) => {
                   defaultValue={useData?.name}
                 />
               )}
-            />
+            /> */}
           </div>
           <div>{useData && <List data={useData} />}</div>
         </CardContent>

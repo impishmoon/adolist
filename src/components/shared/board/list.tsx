@@ -9,13 +9,13 @@ type Props = {
 
 const List: FC<Props> = ({ data }) => {
   const renderItems = data.tasks.map((task) => {
-    return <ListItem key={task.id} data={task} onClick={() => {}} />;
+    return <ListItem key={task.id} data={task} />;
   });
 
   return (
     <div className={css.root}>
       {renderItems}
-      <ListItem onClick={() => {}} />
+      <ListItem />
     </div>
   );
 };
