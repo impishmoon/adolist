@@ -42,7 +42,7 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
         <Grid container>
           <Grid item xs={6}>
             <Typography align="center">New users</Typography>
-            <TextField label="Search users" />
+            <TextField label="Search users" fullWidth />
             <List sx={{ pt: 0 }}>
               {emails.map((email) => (
                 <ListItem key={email} disableGutters>
