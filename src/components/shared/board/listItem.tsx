@@ -110,7 +110,7 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
   };
 
   const onBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
-    if (e.target.value == "") {
+    if (data != null && e.target.value == "") {
       if (createBoard) {
         const newForcedData = { ...forcedData };
         newForcedData.tasks = newForcedData.tasks.filter(
