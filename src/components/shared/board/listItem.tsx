@@ -35,7 +35,15 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
       });
       setForcedData(newForcedData);
     } else {
-      //TODO: creating a new task
+      if (!props.boards) return;
+
+      const foundBoard = props.boards.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      socket?.emit("createTask", {
+        auth: getAuthCookie(),
+        boardId: foundBoard.id,
+      });
     }
   };
 

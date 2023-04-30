@@ -1,4 +1,7 @@
-.input {
+.root {
+  padding: 4px;
 
-  font-size: 20px;
+  .input {
+    font-size: 20px;
+  }
 }

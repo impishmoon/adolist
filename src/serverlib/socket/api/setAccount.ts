@@ -9,7 +9,9 @@ const SocketSetAccount = async (
 ) => {
   const session = decryptAccountToken(data.accountToken);
 
-  socket.data.accountId = session.id;
+  if (session) {
+    socket.data.accountId = session.id;
+  }
 };
 
 export default SocketSetAccount;

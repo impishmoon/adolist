@@ -6,6 +6,7 @@ import SocketCreateBoard from "./api/createBoard";
 import SocketSetBoardName from "./api/setBoardName";
 import SocketSetTaskText from "./api/setTaskText";
 import SocketSetTaskChecked from "./api/setTaskChecked";
+import SocketCreateTask from "./api/createTask";
 
 const SocketAddListeners = (
   io: Server<SocketEmitEvents, SocketListenEvents>
@@ -16,6 +17,7 @@ const SocketAddListeners = (
       socket.on("register", (data) => SocketRegister(socket, data));
       socket.on("setAccount", (data) => SocketSetAccount(socket, data));
       socket.on("createBoard", (data) => SocketCreateBoard(socket, data));
+      socket.on("createTask", (data) => SocketCreateTask(socket, data));
 
       socket.on("setBoardName", (data) => SocketSetBoardName(socket, data));
       socket.on("setTaskText", (data) => SocketSetTaskText(socket, data));

@@ -4,29 +4,24 @@ import { GetServerSideProps, NextPage } from "next";
 import { getLoginSession } from "@/serverlib/auth";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
-import {
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  Input,
-  TextField,
-} from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import Board from "@/components/shared/board";
 import BoardType from "@/types/client/board/board";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import IndexProps, { IndexPropsType } from "@/types/indexProps";
+import { useSocket } from "@/components/contexts/socket";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getLoginSession(context.req);
 
-  let username;
-  let boards;
+  let username: string | null = null;
+  let boards: BoardType[] | null = null;
 
-  if (session.id != null) {
+  if (session?.id != null) {
     const account = await UsersSQL.getById(session.id);
 
     username = account.username;
@@ -49,8 +44,37 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const Page: NextPage<IndexProps> = () => {
-  const { props }: IndexPropsType = useSSRFetcher();
+  const { socket } = useSocket();
+  const { props, setProps }: IndexPropsType = useSSRFetcher();
   const { boards } = props;
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("setBoards", (boards) => {
+      const newProps = { ...props };
+
+      newProps.boards = boards;
+
+      setProps(newProps);
+    });
+
+    socket.on("setTasks", (boardId, tasks) => {
+      const newProps = { ...props };
+
+      const foundBoard = newProps.boards?.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      foundBoard.tasks = tasks;
+
+      setProps(newProps);
+    });
+
+    return () => {
+      socket.off("setBoards");
+      socket.off("setTasks");
+    };
+  }, [socket]);
 
   const renderBoards = boards?.map((board) => {
     return (

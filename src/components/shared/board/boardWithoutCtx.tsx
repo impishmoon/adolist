@@ -66,7 +66,7 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
   const useData = isUsingForcedData ? forcedData : data;
 
   return (
-    <form onSubmit={onSubmit}>
+    <form className={css.root} onSubmit={onSubmit}>
       <Card key={useData?.id} variant="outlined">
         <CardContent>
           <div>

@@ -16,7 +16,7 @@ const SocketCreateBoard = async (
 
   if (user) {
     const boardId = await BoardsSQL.create(user.id, data.data.name);
-    await TasksSQL.create(boardId, user.id, data.data.tasks);
+    await TasksSQL.createMultiple(boardId, user.id, data.data.tasks);
 
     const result: BoardType[] = [];
 

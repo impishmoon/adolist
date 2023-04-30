@@ -1,3 +1,12 @@
+CREATE TABLE "users" (
+	"id" VARCHAR(16) NOT NULL,
+	"username" VARCHAR(64) NOT NULL,
+	"password" VARCHAR(128) NOT NULL,
+	"email" VARCHAR(128) NULL DEFAULT NULL,
+	"timecreated" NUMERIC NOT NULL,
+	PRIMARY KEY ("id")
+);
+
 CREATE TABLE "boards" (
 	"id" VARCHAR(16) NOT NULL,
 	"ownerid" VARCHAR(16) NOT NULL,
@@ -29,13 +38,4 @@ CREATE TABLE "tasks" (
 	"listorder" NUMERIC NOT NULL,
 	PRIMARY KEY ("id"),
 	CONSTRAINT "FK__boards" FOREIGN KEY ("ownerid") REFERENCES "boards" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
-);
-
-CREATE TABLE "users" (
-	"id" VARCHAR(16) NOT NULL,
-	"username" VARCHAR(64) NOT NULL,
-	"password" VARCHAR(128) NOT NULL,
-	"email" VARCHAR(128) NULL DEFAULT NULL,
-	"timecreated" NUMERIC NOT NULL,
-	PRIMARY KEY ("id")
 );

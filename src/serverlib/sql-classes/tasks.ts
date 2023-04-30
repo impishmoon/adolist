@@ -1,4 +1,5 @@
 import psqlQuery, {
+  psqlInsert,
   psqlInsertMultiple,
   psqlUpdate,
 } from "@/serverlib/psql-conn";
@@ -14,13 +15,22 @@ export default class TasksSQL {
     return data[0] as TaskType;
   }
 
-  static async getByOwnerId(id: string) {
+  static async getByOwnerId(ownerid: string) {
     const data = (await psqlQuery(
       "SELECT * FROM tasks WHERE ownerid=$1 ORDER BY listorder",
-      [id]
+      [ownerid]
     )) as any;
 
     return data;
+  }
+
+  static async getLastTask(ownerid: string) {
+    const data = (await psqlQuery(
+      "SELECT * FROM tasks WHERE ownerid=$1 ORDER BY listorder DESC",
+      [ownerid]
+    )) as any;
+
+    return data[0]?.listorder as number | undefined;
   }
 
   static async setText(id: string, text: string) {
@@ -47,20 +57,42 @@ export default class TasksSQL {
     );
   }
 
-  static async create(ownerid: string, updatedby: string, tasks: TaskType[]) {
+  static async createMultiple(
+    ownerid: string,
+    updatedby: string,
+    tasks: TaskType[]
+  ) {
     const newId = randomId();
 
     await psqlInsertMultiple(
       "tasks",
-      tasks.map((task) => ({
+      tasks.map((task, index) => ({
         ...task,
         id: randomId(),
         ownerid,
         timecreated: Date.now(),
         timeupdated: Date.now(),
         updatedby,
+        listorder: index,
       }))
     );
+
+    return newId;
+  }
+
+  static async create(ownerid: string, updatedby: string, listorder: number) {
+    const newId = randomId();
+
+    await psqlInsert("tasks", {
+      id: randomId(),
+      ownerid,
+      text: "",
+      checked: false,
+      timecreated: Date.now(),
+      timeupdated: Date.now(),
+      updatedby,
+      listorder,
+    });
 
     return newId;
   }
