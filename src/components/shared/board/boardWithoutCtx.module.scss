@@ -1,7 +1,13 @@
 .root {
   padding: 4px;
 
-  .input {
-    font-size: 20px;
+  .header {
+    display: flex;
+
+    .input {
+      font-size: 20px;
+      flex: 1;
+      min-width: 0px;
+    }
   }
 }

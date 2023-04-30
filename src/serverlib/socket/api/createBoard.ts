@@ -1,5 +1,6 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import CreateBoardData from "@/types/api/createBoard";
@@ -25,6 +26,7 @@ const SocketCreateBoard = async (
       result.push({
         ...board,
         tasks: await TasksSQL.getByOwnerId(board.id),
+        shares: await BoardSharesSQL.getUserShares(board.id),
       });
     }
 

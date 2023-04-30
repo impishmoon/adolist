@@ -1,5 +1,12 @@
-import { Button, Card, CardActions, CardContent, Grid } from "@mui/material";
-import { ChangeEvent, FC } from "react";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  IconButton,
+} from "@mui/material";
+import { ChangeEvent, FC, useState } from "react";
 import css from "./boardWithoutCtx.module.scss";
 import Input from "@/components/shared/input";
 import List from "@/components/shared/board/list";
@@ -9,6 +16,8 @@ import { useSocket } from "@/components/contexts/socket";
 import getAuthCookie from "@/clientlib/getAuthCookie";
 import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import { IndexPropsType } from "@/types/indexProps";
+import SendIcon from "@mui/icons-material/Send";
+import ShareModal from "./shareModal";
 
 export type Props = {
   data?: BoardType;
@@ -19,6 +28,8 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
   const { socket } = useSocket();
   const { createBoard, forcedData, setForcedData, formData } = useBoard();
   const { control, handleSubmit } = formData;
+
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const onSubmit = handleSubmit(async (data) => {
     //dont use data because we are dealing with a dynamic form and i cant be bothered to figure out how to make react-form-hook work with a dynamic number of inputs
@@ -63,36 +74,54 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
     }
   };
 
+  const onShareClick = () => {
+    setShowShareModal(true);
+  };
+
   const useData = isUsingForcedData ? forcedData : data;
 
   return (
-    <form className={css.root} onSubmit={onSubmit}>
-      <Card key={useData?.id} variant="outlined">
-        <CardContent>
-          <div>
-            <Input
-              className={css.input}
-              required
-              type="text"
-              placeholder="Title"
-              value={useData?.name}
-              onChange={onNameChange}
-            />
-          </div>
-          <div>{useData && <List data={useData} boardId={useData?.id} />}</div>
-        </CardContent>
-        {createBoard && (
-          <CardActions>
-            <Grid container justifyContent={"space-between"}>
-              <Button type="submit">Create</Button>
-              <Button type="reset" color="warning" onClick={onCancel}>
-                Cancel
-              </Button>
-            </Grid>
-          </CardActions>
-        )}
-      </Card>
-    </form>
+    <>
+      <form className={css.root} onSubmit={onSubmit}>
+        <Card key={useData?.id} variant="outlined">
+          <CardContent>
+            <div className={css.header}>
+              <Input
+                className={css.input}
+                required
+                type="text"
+                placeholder="Title"
+                value={useData?.name}
+                onChange={onNameChange}
+              />
+              <IconButton aria-label="send" size="small" onClick={onShareClick}>
+                <SendIcon fontSize="small" />
+              </IconButton>
+            </div>
+            <div>
+              {useData && <List data={useData} boardId={useData?.id} />}
+            </div>
+          </CardContent>
+          {createBoard && (
+            <CardActions>
+              <Grid container justifyContent={"space-between"}>
+                <Button type="submit">Create</Button>
+                <Button type="reset" color="warning" onClick={onCancel}>
+                  Cancel
+                </Button>
+              </Grid>
+            </CardActions>
+          )}
+        </Card>
+      </form>
+      {useData && (
+        <ShareModal
+          board={useData}
+          open={showShareModal}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
+    </>
   );
 };
 

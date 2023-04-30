@@ -12,6 +12,7 @@ import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import IndexProps, { IndexPropsType } from "@/types/indexProps";
 import { useSocket } from "@/components/contexts/socket";
 import { useEffect } from "react";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       boards.push({
         ...serverBoard,
         tasks: await TasksSQL.getByOwnerId(serverBoard.id),
+        shares: await BoardSharesSQL.getUserShares(serverBoard.id),
       });
     }
   }

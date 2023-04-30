@@ -10,6 +10,7 @@ export const getDefaultData = () => ({
   timecreated: 0,
   timeupdated: 0,
   tasks: [],
+  shares: [],
 });
 
 type FormData = {
