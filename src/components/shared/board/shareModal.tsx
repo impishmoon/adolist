@@ -28,6 +28,7 @@ const emails = ["username@gmail.com", "user02@gmail.com"];
 const ShareModal: FC<Props> = ({ open, onClose, board }) => {
   //TODO: Implement here debounced function to send socket to backend to get list of searchable users for board
   //Provide auth, boardid, and searchQuery and server will return filtered list of users (not the same user that's sending the socket and not any user that is already shared)
+  //In backend, when choosing a user to share with, double check that the user fits our conditions (is not the same user as the requesting user, is not already shared with the board)
 
   return (
     <Dialog
