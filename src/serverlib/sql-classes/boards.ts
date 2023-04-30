@@ -1,5 +1,9 @@
 import crypto from "crypto";
-import psqlQuery, { psqlInsert, psqlUpdate } from "@/serverlib/psql-conn";
+import psqlQuery, {
+  psqlDelete,
+  psqlInsert,
+  psqlUpdate,
+} from "@/serverlib/psql-conn";
 import { randomId } from "@/sharedlib/essentials";
 import BoardType from "@/types/server/board/board";
 
@@ -30,6 +34,12 @@ export default class BoardsSQL {
         id,
       }
     );
+  }
+
+  static async delete(id: string) {
+    await psqlDelete("boards", {
+      id,
+    });
   }
 
   static async create(ownerid: string, name: string) {

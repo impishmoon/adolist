@@ -1,49 +1,35 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { IndexPropsType } from "@/types/indexProps";
+import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import { FC } from "react";
-
-const pages = ["Test"];
+import { useSSRFetcher } from "../contexts/ssrFetcher";
+import Link from "next/link";
 
 const NavBar: FC = () => {
+  const { props }: IndexPropsType = useSSRFetcher();
+
+  const renderButtons = () => {
+    if (!props.username) {
+      return (
+        <>
+          <Link href="/register">
+            <Button color="inherit">Register</Button>
+          </Link>
+          <Link href="/login">
+            <Button color="inherit">Login</Button>
+          </Link>
+        </>
+      );
+    }
+  };
+
   return (
-    <AppBar>
+    <AppBar position="static">
       <Container>
         <Toolbar>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Link href="/">ADoList</Link>
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={() => {}}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
+          {renderButtons()}
         </Toolbar>
       </Container>
     </AppBar>

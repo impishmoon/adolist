@@ -1,4 +1,4 @@
-import { ChangeEvent, FC } from "react";
+import { ChangeEvent, FC, FocusEvent } from "react";
 import css from "./listItem.module.scss";
 import { Box, Checkbox, TextareaAutosize } from "@mui/material";
 import TaskType from "@/types/client/board/task";
@@ -109,6 +109,38 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
     }
   };
 
+  const onBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
+    if (e.target.value == "") {
+      if (createBoard) {
+        const newForcedData = { ...forcedData };
+        newForcedData.tasks = newForcedData.tasks.filter(
+          (task) => task.id !== data?.id
+        );
+        setForcedData(newForcedData);
+      } else {
+        const newProps = { ...props };
+
+        if (!newProps.boards) return;
+
+        const foundBoard = newProps.boards.find(
+          (board) => board.id === boardId
+        );
+        if (!foundBoard) return;
+
+        foundBoard.tasks = foundBoard.tasks.filter(
+          (task) => task.id !== data?.id
+        );
+
+        setProps(newProps);
+
+        socket?.emit("deleteTask", {
+          auth: getAuthCookie(),
+          id: data!.id,
+        });
+      }
+    }
+  };
+
   const renderSideItem = () => {
     if (data) {
       return (
@@ -136,6 +168,7 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
           placeholder="An awesome task"
           value={data?.text}
           onChange={onTextChange}
+          onBlur={onBlur}
         />
       </div>
     </div>

@@ -1,19 +1,69 @@
+import Router from "next/router";
 import LayoutContainer from "@/components/layout/container";
 import { Button, FormControl, TextField } from "@mui/material";
 import Link from "next/link";
 import css from "./login.module.scss";
+import { Controller, useForm } from "react-hook-form";
+import { useSocket } from "@/components/contexts/socket";
+
+type FormData = {
+  username: string;
+  password: string;
+};
 
 const LoginPage = () => {
+  const { socket } = useSocket();
+  const { control, handleSubmit } = useForm<FormData>();
+
+  const onSubmit = handleSubmit(async (data) => {
+    if (!socket) {
+      return;
+    }
+
+    socket.once("apiResponse", async (response) => {
+      if (!response.error) {
+        await fetch("/api/setCookie", {
+          headers: {},
+          body: JSON.stringify(data),
+          method: "POST",
+        });
+
+        Router.push("/");
+      }
+    });
+
+    socket.emit("login", data);
+  });
+
   return (
     <>
       <LayoutContainer className={css.root}>
         <div>Login</div>
-        <form>
+        <form onSubmit={onSubmit}>
           <FormControl required fullWidth margin="normal">
-            <TextField required type="text" label="Username" />
+            <Controller
+              name="username"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <TextField required type="text" label="Username" {...field} />
+              )}
+            />
           </FormControl>
           <FormControl required fullWidth margin="normal">
-            <TextField required type="password" label="Password" />
+            <Controller
+              name="password"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <TextField
+                  required
+                  type="password"
+                  label="Password"
+                  {...field}
+                />
+              )}
+            />
           </FormControl>
           <FormControl fullWidth margin="normal">
             <div className={css.buttons}>

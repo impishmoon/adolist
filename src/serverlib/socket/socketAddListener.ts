@@ -7,6 +7,9 @@ import SocketSetBoardName from "./api/setBoardName";
 import SocketSetTaskText from "./api/setTaskText";
 import SocketSetTaskChecked from "./api/setTaskChecked";
 import SocketCreateTask from "./api/createTask";
+import SocketLogin from "./api/login";
+import SocketDeleteTask from "./api/deleteTask";
+import SocketDeleteBoard from "./api/deleteBoard";
 
 const SocketAddListeners = (
   io: Server<SocketEmitEvents, SocketListenEvents>
@@ -15,6 +18,8 @@ const SocketAddListeners = (
     "connection",
     (socket: Socket<SocketEmitEvents, SocketListenEvents>) => {
       socket.on("register", (data) => SocketRegister(socket, data));
+      socket.on("login", (data) => SocketLogin(socket, data));
+
       socket.on("setAccount", (data) => SocketSetAccount(socket, data));
       socket.on("createBoard", (data) => SocketCreateBoard(socket, data));
       socket.on("createTask", (data) => SocketCreateTask(socket, data));
@@ -22,6 +27,9 @@ const SocketAddListeners = (
       socket.on("setBoardName", (data) => SocketSetBoardName(socket, data));
       socket.on("setTaskText", (data) => SocketSetTaskText(socket, data));
       socket.on("setTaskChecked", (data) => SocketSetTaskChecked(socket, data));
+
+      socket.on("deleteTask", (data) => SocketDeleteTask(socket, data));
+      socket.on("deleteBoard", (data) => SocketDeleteBoard(socket, data));
     }
   );
 };

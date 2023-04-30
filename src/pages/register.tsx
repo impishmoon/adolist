@@ -14,7 +14,6 @@ type FormData = {
 
 const RegisterPage = () => {
   const { socket } = useSocket();
-
   const { control, handleSubmit } = useForm<FormData>();
 
   const onSubmit = handleSubmit(async (data) => {

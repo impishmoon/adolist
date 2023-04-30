@@ -1,4 +1,5 @@
 import psqlQuery, {
+  psqlDelete,
   psqlInsert,
   psqlInsertMultiple,
   psqlUpdate,
@@ -31,6 +32,10 @@ export default class TasksSQL {
     )) as any;
 
     return data[0]?.listorder as number | undefined;
+  }
+
+  static async delete(id: string) {
+    await psqlDelete("tasks", { id });
   }
 
   static async setText(id: string, text: string) {

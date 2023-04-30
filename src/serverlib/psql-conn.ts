@@ -13,9 +13,9 @@ export const pool = new Pool({
   idleTimeoutMillis: 3000,
 });
 
-type AcceptedType = number | string | boolean | undefined;
+type AcceptedTypes = number | string | boolean | undefined;
 
-const psqlQuery = (query: string, params: AcceptedType[]) => {
+const psqlQuery = (query: string, params: AcceptedTypes[]) => {
   return new Promise(async (resolve) => {
     await pool.query(query, params, (error, results) => {
       if (error) throw error;
@@ -28,7 +28,7 @@ export default psqlQuery;
 
 export const psqlInsert = async (
   table: string,
-  values: { [test: string]: AcceptedType }
+  values: { [test: string]: AcceptedTypes }
 ) => {
   let valuesFillin = [];
 
@@ -46,7 +46,7 @@ export const psqlInsert = async (
 
 export const psqlInsertMultiple = async (
   table: string,
-  values: { [test: string]: AcceptedType }[]
+  values: { [test: string]: AcceptedTypes }[]
 ) => {
   let valuesFillin = [];
   let valuesValues: any[] = [];
@@ -75,8 +75,8 @@ export const psqlInsertMultiple = async (
 
 export const psqlUpdate = async (
   table: string,
-  values: { [test: string]: AcceptedType },
-  where: { [test: string]: AcceptedType }
+  values: { [id: string]: AcceptedTypes },
+  where: { [id: string]: AcceptedTypes }
 ) => {
   let finalValues = [];
   let updateValues = [];
@@ -101,6 +101,26 @@ export const psqlUpdate = async (
   let query = `UPDATE ${table} SET ${updateValues.join(
     ", "
   )} WHERE ${whereValues.join(", ")}`;
+
+  await psqlQuery(query, finalValues);
+};
+
+export const psqlDelete = async (
+  table: string,
+  where: { [id: string]: AcceptedTypes }
+) => {
+  let finalValues = [];
+  let whereValues = [];
+
+  const whereEntries = Object.entries(where);
+  for (let i = 0; i < whereEntries.length; i++) {
+    const [key, value] = whereEntries[i];
+
+    whereValues.push(`${key.toLowerCase()}=$${finalValues.length + 1}`);
+    finalValues.push(value);
+  }
+
+  let query = `DELETE FROM ${table} WHERE ${whereValues.join(", ")}`;
 
   await psqlQuery(query, finalValues);
 };

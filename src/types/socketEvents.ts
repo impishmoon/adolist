@@ -8,9 +8,14 @@ import SetTaskTextData from "./api/setTaskText";
 import SetTaskCheckedData from "./api/setTaskChecked";
 import CreateTaskData from "./api/createTask";
 import TaskType from "./client/board/task";
+import LoginData from "./api/login";
+import DeleteTaskData from "./api/deleteTask";
+import DeleteBoardData from "./api/deleteBoard";
 
 export interface SocketEmitEvents {
+  login: (data: LoginData) => void;
   register: (data: RegisterData) => void;
+
   setAccount: (data: SetAccountData) => void;
   createBoard: (data: CreateBoardData) => void;
   createTask: (data: CreateTaskData) => void;
@@ -18,6 +23,9 @@ export interface SocketEmitEvents {
   setBoardName: (data: SetBoardNameData) => void;
   setTaskText: (data: SetTaskTextData) => void;
   setTaskChecked: (data: SetTaskCheckedData) => void;
+
+  deleteTask: (data: DeleteTaskData) => void;
+  deleteBoard: (data: DeleteBoardData) => void;
 }
 
 export interface SocketListenEvents {
