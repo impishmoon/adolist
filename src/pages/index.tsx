@@ -72,11 +72,54 @@ const Page: NextPage<IndexProps> = () => {
       setProps(newProps);
     });
 
+    socket.on("setBoardName", (id, name) => {
+      const newProps = { ...props };
+
+      const foundBoard = newProps.boards?.find((board) => board.id === id);
+      if (!foundBoard) return;
+
+      foundBoard.name = name;
+
+      setProps(newProps);
+    });
+
+    socket.on("setTaskText", (boardId, id, text) => {
+      const newProps = { ...props };
+
+      const foundBoard = newProps.boards?.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      const foundTask = foundBoard.tasks.find((task) => task.id == id);
+      if (!foundTask) return;
+
+      foundTask.text = text;
+
+      setProps(newProps);
+    });
+
+    socket.on("setTaskChecked", (boardId, id, checked) => {
+      const newProps = { ...props };
+
+      const foundBoard = newProps.boards?.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      const foundTask = foundBoard.tasks.find((task) => task.id == id);
+      if (!foundTask) return;
+
+      foundTask.checked = checked;
+
+      setProps(newProps);
+    });
+
     return () => {
       socket.off("setBoards");
+      socket.off("setBoardName");
+
       socket.off("setTasks");
+      socket.off("setTaskText");
+      socket.off("setTaskChecked");
     };
-  }, [socket]);
+  }, [props, setProps, socket]);
 
   const renderBoards = boards?.map((board) => {
     return (

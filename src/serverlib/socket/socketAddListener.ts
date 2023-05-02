@@ -24,9 +24,11 @@ const SocketAddListeners = (
       socket.on("createBoard", (data) => SocketCreateBoard(socket, data));
       socket.on("createTask", (data) => SocketCreateTask(socket, data));
 
-      socket.on("setBoardName", (data) => SocketSetBoardName(socket, data));
-      socket.on("setTaskText", (data) => SocketSetTaskText(socket, data));
-      socket.on("setTaskChecked", (data) => SocketSetTaskChecked(socket, data));
+      socket.on("setBoardName", (data) => SocketSetBoardName(io, socket, data));
+      socket.on("setTaskText", (data) => SocketSetTaskText(io, socket, data));
+      socket.on("setTaskChecked", (data) =>
+        SocketSetTaskChecked(io, socket, data)
+      );
 
       socket.on("deleteTask", (data) => SocketDeleteTask(socket, data));
       socket.on("deleteBoard", (data) => SocketDeleteBoard(socket, data));

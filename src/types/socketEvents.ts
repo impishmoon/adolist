@@ -30,6 +30,11 @@ export interface SocketEmitEvents {
 
 export interface SocketListenEvents {
   apiResponse: (data: ApiResponse) => void;
+
   setBoards: (data: BoardType[]) => void;
+  setBoardName: (id: string, name: string) => void;
+
   setTasks: (boardId: string, tasks: TaskType[]) => void;
+  setTaskText: (boardId: string, id: string, text: string) => void;
+  setTaskChecked: (boardId: string, id: string, checked: boolean) => void;
 }
