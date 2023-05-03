@@ -20,6 +20,9 @@ export interface SocketEmitEvents {
   createBoard: (data: CreateBoardData) => void;
   createTask: (data: CreateTaskData) => void;
 
+  shareBoardWithUser: (auth: string, boardId: string, userId: string) => void;
+  unshareBoardWithUser: (auth: string, boardId: string, userId: string) => void;
+
   setBoardName: (data: SetBoardNameData) => void;
   setTaskText: (data: SetTaskTextData) => void;
   setTaskChecked: (data: SetTaskCheckedData) => void;

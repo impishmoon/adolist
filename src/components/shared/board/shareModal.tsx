@@ -13,9 +13,13 @@ import {
   Typography,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import { FC } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { blue } from "@mui/material/colors";
 import BoardType from "@/types/client/board/board";
+import useDebounce from "@/clientlib/useDebounce";
+import UserType from "@/types/client/board/user";
+import { useSocket } from "@/components/contexts/socket";
+import getAuthCookie from "@/clientlib/getAuthCookie";
 
 type Props = {
   open: boolean;
@@ -23,12 +27,63 @@ type Props = {
   board: BoardType;
 };
 
-const emails = ["username@gmail.com", "user02@gmail.com"];
-
 const ShareModal: FC<Props> = ({ open, onClose, board }) => {
-  //TODO: Implement here debounced function to send socket to backend to get list of searchable users for board
-  //Provide auth, boardid, and searchQuery and server will return filtered list of users (not the same user that's sending the socket and not any user that is already shared)
-  //In backend, when choosing a user to share with, double check that the user fits our conditions (is not the same user as the requesting user, is not already shared with the board)
+  const { socket } = useSocket();
+
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce<string>(search, 250);
+  const [searchedUsers, setSearchedUsers] = useState<UserType[]>([]);
+
+  const onSearchChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  useEffect(() => {
+    (async () => {
+      const rawResponse = await fetch("/api/shareBoardSearchUsers", {
+        body: JSON.stringify({
+          boardId: board.id,
+          search: debouncedSearch,
+        }),
+        method: "POST",
+      });
+      const response = await rawResponse.json();
+
+      if (response.error == null) {
+        setSearchedUsers(response.data);
+      } else {
+        setSearchedUsers([]);
+      }
+    })();
+  }, [board.id, debouncedSearch]);
+
+  const onAddUser = async (userId: string) => {
+    if (socket == null) return;
+
+    setSearch("");
+    setSearchedUsers([]);
+
+    socket.emit("shareBoardWithUser", getAuthCookie(), board.id, userId);
+  };
+
+  const renderSearchedUsers = searchedUsers.map((user) => {
+    return (
+      <ListItem key={user.id} disableGutters>
+        <ListItemButton
+          onClick={() => {
+            onAddUser(user.id);
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
+              <PersonIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={user.username} />
+        </ListItemButton>
+      </ListItem>
+    );
+  });
 
   return (
     <Dialog
@@ -43,21 +98,13 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
         <Grid container>
           <Grid item xs={6}>
             <Typography align="center">New users</Typography>
-            <TextField label="Search users" fullWidth />
-            <List sx={{ pt: 0 }}>
-              {emails.map((email) => (
-                <ListItem key={email} disableGutters>
-                  <ListItemButton onClick={() => {}} key={email}>
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                        <PersonIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={email} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
+            <TextField
+              onChange={onSearchChange}
+              value={search}
+              label="Search users"
+              fullWidth
+            />
+            <List sx={{ pt: 0 }}>{renderSearchedUsers}</List>
           </Grid>
           <Grid item xs={6}>
             <Typography align="center">Existing users</Typography>

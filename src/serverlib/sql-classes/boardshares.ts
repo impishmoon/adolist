@@ -21,6 +21,28 @@ export default class BoardSharesSQL {
     return data as UserType[];
   }
 
+  static async searchForUsersWithoutBoard(searchText: string, userId: string) {
+    const data = (await psqlQuery(
+      "SELECT users.id, users.username FROM users WHERE users.username LIKE $1 AND users.id != $2",
+      [`%${searchText}%`, userId]
+    )) as any;
+
+    return data as UserType[];
+  }
+
+  static async searchForUsers(
+    searchText: string,
+    boardId: string,
+    userId: string
+  ) {
+    const data = (await psqlQuery(
+      "SELECT users.id, users.username FROM users WHERE users.username LIKE $1 AND NOT EXISTS (SELECT FROM boardshares WHERE boardshares.boardid=$2 AND boardshares.userid=users.id) AND users.id != $3",
+      [`%${searchText}%`, boardId, userId]
+    )) as any;
+
+    return data as UserType[];
+  }
+
   static async delete(id: string) {
     await psqlDelete("boardshares", {
       id,

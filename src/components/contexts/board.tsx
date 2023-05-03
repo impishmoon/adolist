@@ -1,10 +1,9 @@
-import { randomId } from "@/sharedlib/essentials";
 import BoardType from "@/types/client/board/board";
 import { createContext, useContext, FC, ReactNode, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 
 export const getDefaultData = () => ({
-  id: randomId(),
+  id: "",
   ownerid: "",
   name: "",
   timecreated: 0,

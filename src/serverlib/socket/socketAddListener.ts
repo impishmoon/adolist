@@ -10,6 +10,7 @@ import SocketCreateTask from "./api/createTask";
 import SocketLogin from "./api/login";
 import SocketDeleteTask from "./api/deleteTask";
 import SocketDeleteBoard from "./api/deleteBoard";
+import SocketShareBoardWithUser from "./api/shareBoardWithUser";
 
 const SocketAddListeners = (
   io: Server<SocketEmitEvents, SocketListenEvents>
@@ -23,6 +24,11 @@ const SocketAddListeners = (
       socket.on("setAccount", (data) => SocketSetAccount(socket, data));
       socket.on("createBoard", (data) => SocketCreateBoard(socket, data));
       socket.on("createTask", (data) => SocketCreateTask(socket, data));
+
+      socket.on("shareBoardWithUser", (auth, boardId, userId) =>
+        SocketShareBoardWithUser(io, socket, auth, boardId, userId)
+      );
+      // socket.on("unshareBoardWithUser", (data) => SocketUnshareBoardWithUser(socket, data));
 
       socket.on("setBoardName", (data) => SocketSetBoardName(io, socket, data));
       socket.on("setTaskText", (data) => SocketSetTaskText(io, socket, data));

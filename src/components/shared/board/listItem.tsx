@@ -3,7 +3,6 @@ import css from "./listItem.module.scss";
 import { Box, Checkbox, TextareaAutosize } from "@mui/material";
 import TaskType from "@/types/client/board/task";
 import { useBoard } from "@/components/contexts/board";
-import { randomId } from "@/sharedlib/essentials";
 import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import { IndexPropsType } from "@/types/indexProps";
 import { useSocket } from "@/components/contexts/socket";
@@ -25,7 +24,7 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
     if (createBoard) {
       const newForcedData = { ...forcedData };
       newForcedData.tasks.push({
-        id: randomId(),
+        id: "",
         ownerid: "",
         checked: false,
         text: "",
