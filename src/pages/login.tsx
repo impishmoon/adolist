@@ -1,30 +1,81 @@
+import Router from "next/router";
 import LayoutContainer from "@/components/layout/container";
-import { Button, FormControl, Grid, TextField } from "@mui/material";
+import { Button, FormControl, TextField, Typography } from "@mui/material";
 import Link from "next/link";
+import css from "./login.module.scss";
+import { Controller, useForm } from "react-hook-form";
+import { useSocket } from "@/components/contexts/socket";
+
+type FormData = {
+  username: string;
+  password: string;
+};
 
 const LoginPage = () => {
+  const { socket } = useSocket();
+  const { control, handleSubmit } = useForm<FormData>();
+
+  const onSubmit = handleSubmit(async (data) => {
+    if (!socket) {
+      return;
+    }
+
+    socket.once("apiResponse", async (response) => {
+      if (!response.error) {
+        await fetch("/api/setCookie", {
+          headers: {},
+          body: JSON.stringify(data),
+          method: "POST",
+        });
+
+        Router.push("/");
+      }
+    });
+
+    socket.emit("login", data);
+  });
+
   return (
     <>
-      <LayoutContainer>
-        <div>Login</div>
-        <form>
+      <LayoutContainer className={css.root}>
+        <Typography>Login</Typography>
+        <form onSubmit={onSubmit}>
           <FormControl required fullWidth margin="normal">
-            <TextField required type="text" label="Username" />
+            <Controller
+              name="username"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <TextField required type="text" label="Username" {...field} />
+              )}
+            />
           </FormControl>
           <FormControl required fullWidth margin="normal">
-            <TextField required type="password" label="Password" />
+            <Controller
+              name="password"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <TextField
+                  required
+                  type="password"
+                  label="Password"
+                  {...field}
+                />
+              )}
+            />
           </FormControl>
           <FormControl fullWidth margin="normal">
-            <div>
-              <Button variant="contained" color="success">
+            <div className={css.buttons}>
+              <Button type="submit" variant="contained" color="success">
                 Login
               </Button>
+              <Link href="/register">
+                <Button type="button" variant="contained">
+                  Register
+                </Button>
+              </Link>
             </div>
-          </FormControl>
-          <FormControl fullWidth margin="normal">
-            <Link href="/register">
-              <Button variant="contained">Register</Button>
-            </Link>
           </FormControl>
         </form>
       </LayoutContainer>

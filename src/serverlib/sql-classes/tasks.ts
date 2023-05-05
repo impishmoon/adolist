@@ -1,0 +1,116 @@
+import psqlQuery, {
+  psqlDelete,
+  psqlInsert,
+  psqlInsertMultiple,
+  psqlUpdate,
+} from "@/serverlib/psql-conn";
+import { randomId } from "@/sharedlib/essentials";
+import TaskType from "@/types/server/board/task";
+
+export default class TasksSQL {
+  static async getById(id: string) {
+    const data = (await psqlQuery("SELECT * FROM tasks WHERE id=$1", [
+      id,
+    ])) as any;
+
+    return data[0] as TaskType;
+  }
+
+  static async getByOwnerId(ownerid: string) {
+    const data = (await psqlQuery(
+      "SELECT * FROM tasks WHERE ownerid=$1 ORDER BY listorder",
+      [ownerid]
+    )) as any;
+
+    return data;
+  }
+
+  static async getLast(ownerid: string) {
+    const data = (await psqlQuery(
+      "SELECT * FROM tasks WHERE ownerid=$1 ORDER BY listorder DESC",
+      [ownerid]
+    )) as any;
+
+    return data[0]?.listorder as number | undefined;
+  }
+
+  static async delete(id: string) {
+    await psqlDelete("tasks", { id });
+  }
+
+  static async setText(id: string, text: string) {
+    await psqlUpdate(
+      "tasks",
+      {
+        text,
+      },
+      {
+        id,
+      }
+    );
+  }
+
+  static async setUpdatedBy(id: string, updatedby: string) {
+    await psqlUpdate(
+      "tasks",
+      {
+        updatedby,
+      },
+      {
+        id,
+      }
+    );
+  }
+
+  static async setChecked(id: string, checked: boolean) {
+    await psqlUpdate(
+      "tasks",
+      {
+        checked,
+      },
+      {
+        id,
+      }
+    );
+  }
+
+  static async createMultiple(
+    ownerid: string,
+    updatedby: string,
+    tasks: TaskType[]
+  ) {
+    const newId = randomId();
+
+    await psqlInsertMultiple(
+      "tasks",
+      tasks.map((task, index) => ({
+        ...task,
+        id: randomId(),
+        ownerid,
+        timecreated: Date.now(),
+        timeupdated: Date.now(),
+        updatedby,
+        listorder: index,
+      }))
+    );
+
+    return newId;
+  }
+
+  static async create(ownerid: string, updatedby: string, listorder: number) {
+    const newId = randomId();
+
+    await psqlInsert("tasks", {
+      id: randomId(),
+      ownerid,
+      text: "",
+      checked: false,
+      timecreated: Date.now(),
+      timeupdated: Date.now(),
+      updatedby,
+      listorder,
+    });
+
+    return newId;
+  }
+}
