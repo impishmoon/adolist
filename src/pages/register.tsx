@@ -1,6 +1,6 @@
 import LayoutContainer from "@/components/layout/container";
 import Router from "next/router";
-import { Button, FormControl, TextField } from "@mui/material";
+import { Button, FormControl, TextField, Typography } from "@mui/material";
 import Link from "next/link";
 import css from "./register.module.scss";
 import { useForm, Controller } from "react-hook-form";
@@ -39,7 +39,7 @@ const RegisterPage = () => {
   return (
     <>
       <LayoutContainer className={css.root}>
-        <div>Register</div>
+        <Typography>Register</Typography>
         <form onSubmit={onSubmit}>
           <FormControl required fullWidth margin="normal">
             <Controller

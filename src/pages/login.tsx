@@ -1,6 +1,6 @@
 import Router from "next/router";
 import LayoutContainer from "@/components/layout/container";
-import { Button, FormControl, TextField } from "@mui/material";
+import { Button, FormControl, TextField, Typography } from "@mui/material";
 import Link from "next/link";
 import css from "./login.module.scss";
 import { Controller, useForm } from "react-hook-form";
@@ -38,7 +38,7 @@ const LoginPage = () => {
   return (
     <>
       <LayoutContainer className={css.root}>
-        <div>Login</div>
+        <Typography>Login</Typography>
         <form onSubmit={onSubmit}>
           <FormControl required fullWidth margin="normal">
             <Controller
