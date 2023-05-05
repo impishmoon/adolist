@@ -111,6 +111,7 @@ const NavBar: FC = () => {
             >
               <Link href="/">ADoList</Link>
             </Typography>
+            {renderButtons()}
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               <Link
                 href="https://trello.com/b/uAM4F8fI/adolist"
@@ -122,7 +123,6 @@ const NavBar: FC = () => {
                 <Button color="inherit">GitHub</Button>
               </Link>
             </Box>
-            {renderButtons()}
           </Toolbar>
         </Container>
       </AppBar>
