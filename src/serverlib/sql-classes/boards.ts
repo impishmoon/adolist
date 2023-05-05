@@ -31,7 +31,7 @@ export default class BoardsSQL {
       [ownerid]
     )) as any;
 
-    return data[0]?.listorder as number | undefined;
+    return data[0]?.listorder as string | undefined;
   }
 
   static async setName(id: string, name: string) {

@@ -19,10 +19,9 @@ const SocketCreateTask = async (
 
   if (!checkBoardAccess(user.id, data.boardId)) return;
 
-  const lastTaskListOrder = await TasksSQL.getLast(data.boardId);
-  if (lastTaskListOrder === undefined) return;
+  const lastTaskListOrder = (await TasksSQL.getLast(data.boardId)) ?? "-1";
 
-  await TasksSQL.create(data.boardId, user.id, lastTaskListOrder + 1);
+  await TasksSQL.create(data.boardId, user.id, parseInt(lastTaskListOrder) + 1);
 
   const result = await TasksSQL.getByOwnerId(data.boardId);
   io.to(data.boardId).emit("setTasks", data.boardId, result);
