@@ -1,8 +1,11 @@
 import { getToken } from "@/serverlib/auth";
+import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import RegisterData from "@/types/api/register";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Socket } from "socket.io";
+import { processUserSocket } from "../userSocketsMap";
 
 const SocketLogin = async (
   socket: Socket<SocketEmitEvents, SocketListenEvents>,
@@ -29,6 +32,15 @@ const SocketLogin = async (
   }
 
   socket.data.accountId = user.id;
+  processUserSocket(user.id, socket);
+
+  const ownedBoards = await BoardsSQL.getByOwnerId(user.id);
+  const sharedWithBoards = await BoardSharesSQL.getSharedWithBoards(user.id);
+  const allBoards = [...ownedBoards, ...sharedWithBoards];
+
+  for (const board of allBoards) {
+    socket.join(board.id);
+  }
 
   socket.emit("apiResponse", { error: undefined, data: "success" });
 };

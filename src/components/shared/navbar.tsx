@@ -54,23 +54,27 @@ const NavBar: FC = () => {
         </Typography>
       </Link>
       <Divider />
-      <List>
-        <Link href="/register">
-          <ListItem disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary="Register" />
-            </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link href="/login">
-          <ListItem disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary="Login" />
-            </ListItemButton>
-          </ListItem>
-        </Link>
-      </List>
-      <Divider />
+      {!props.id && (
+        <>
+          <List>
+            <Link href="/register">
+              <ListItem disablePadding>
+                <ListItemButton sx={{ textAlign: "center" }}>
+                  <ListItemText primary="Register" />
+                </ListItemButton>
+              </ListItem>
+            </Link>
+            <Link href="/login">
+              <ListItem disablePadding>
+                <ListItemButton sx={{ textAlign: "center" }}>
+                  <ListItemText primary="Login" />
+                </ListItemButton>
+              </ListItem>
+            </Link>
+          </List>
+          <Divider />
+        </>
+      )}
       <List>
         <Link href="https://trello.com/b/uAM4F8fI/adolist" target="_blank">
           <ListItem disablePadding>
