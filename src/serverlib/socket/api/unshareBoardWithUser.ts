@@ -4,7 +4,7 @@ import UsersSQL from "@/serverlib/sql-classes/users";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Server, Socket } from "socket.io";
 import { checkBoardAccess, getBoardsForClient } from "@/serverlib/essentials";
-import { getUserSockets } from "../userSocketsMap";
+import { getUserSockets, userSocketsEmit } from "../userSocketsMap";
 
 const SocketUnshareBoardWithUser = async (
   io: Server<SocketEmitEvents, SocketListenEvents>,
@@ -21,7 +21,8 @@ const SocketUnshareBoardWithUser = async (
 
   await BoardSharesSQL.delete(boardId, userId);
 
-  socket.emit(
+  userSocketsEmit(
+    user.id,
     "setBoardSharedUsers",
     boardId,
     await BoardSharesSQL.getUserShares(boardId)

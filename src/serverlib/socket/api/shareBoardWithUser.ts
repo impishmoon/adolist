@@ -7,7 +7,7 @@ import BoardType from "@/types/client/board/board";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Server, Socket } from "socket.io";
 import { checkBoardAccess, getBoardsForClient } from "@/serverlib/essentials";
-import { getUserSockets } from "../userSocketsMap";
+import { getUserSockets, userSocketsEmit } from "../userSocketsMap";
 
 const SocketShareBoardWithUser = async (
   io: Server<SocketEmitEvents, SocketListenEvents>,
@@ -24,7 +24,8 @@ const SocketShareBoardWithUser = async (
 
   await BoardSharesSQL.create(boardId, userId);
 
-  socket.emit(
+  userSocketsEmit(
+    user.id,
     "setBoardSharedUsers",
     boardId,
     await BoardSharesSQL.getUserShares(boardId)

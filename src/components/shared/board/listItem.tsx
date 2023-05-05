@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, FocusEvent } from "react";
+import { ChangeEvent, KeyboardEvent, FC, FocusEvent } from "react";
 import css from "./listItem.module.scss";
 import { Box, Checkbox, TextareaAutosize } from "@mui/material";
 import TaskType from "@/types/client/board/task";
@@ -7,6 +7,7 @@ import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import { IndexPropsType } from "@/types/indexProps";
 import { useSocket } from "@/components/contexts/socket";
 import getAuthCookie from "@/clientlib/getAuthCookie";
+import { randomId } from "@/sharedlib/essentials";
 
 type Props = {
   data?: TaskType;
@@ -18,13 +19,11 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
   const { socket } = useSocket();
   const { createBoard, forcedData, setForcedData } = useBoard();
 
-  const onClick = () => {
-    if (data != null) return;
-
+  const createNewTask = () => {
     if (createBoard) {
       const newForcedData = { ...forcedData };
       newForcedData.tasks.push({
-        id: "",
+        id: randomId(),
         ownerid: "",
         checked: false,
         text: "",
@@ -44,6 +43,12 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
         boardId: foundBoard.id,
       });
     }
+  };
+
+  const onClick = () => {
+    if (data != null) return;
+
+    createNewTask();
   };
 
   const onCheckedChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +79,23 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
         id: data!.id,
         checked: e.target.checked,
       });
+    }
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Disable enter=new task behavior in mobile phones
+    if (
+      !/Android|iPhone/i.test(navigator.userAgent) &&
+      e.key == "Enter" &&
+      !e.shiftKey
+    ) {
+      createNewTask();
+      e.preventDefault();
+    }
+
+    if (e.key == "Backspace" && data?.text == "") {
+      deleteTask();
+      e.preventDefault();
     }
   };
 
@@ -108,35 +130,37 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
     }
   };
 
+  const deleteTask = () => {
+    if (createBoard) {
+      const newForcedData = { ...forcedData };
+      newForcedData.tasks = newForcedData.tasks.filter(
+        (task) => task.id !== data?.id
+      );
+      setForcedData(newForcedData);
+    } else {
+      const newProps = { ...props };
+
+      if (!newProps.boards) return;
+
+      const foundBoard = newProps.boards.find((board) => board.id === boardId);
+      if (!foundBoard) return;
+
+      foundBoard.tasks = foundBoard.tasks.filter(
+        (task) => task.id !== data?.id
+      );
+
+      setProps(newProps);
+
+      socket?.emit("deleteTask", {
+        auth: getAuthCookie(),
+        id: data!.id,
+      });
+    }
+  };
+
   const onBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
     if (data != null && e.target.value == "") {
-      if (createBoard) {
-        const newForcedData = { ...forcedData };
-        newForcedData.tasks = newForcedData.tasks.filter(
-          (task) => task.id !== data?.id
-        );
-        setForcedData(newForcedData);
-      } else {
-        const newProps = { ...props };
-
-        if (!newProps.boards) return;
-
-        const foundBoard = newProps.boards.find(
-          (board) => board.id === boardId
-        );
-        if (!foundBoard) return;
-
-        foundBoard.tasks = foundBoard.tasks.filter(
-          (task) => task.id !== data?.id
-        );
-
-        setProps(newProps);
-
-        socket?.emit("deleteTask", {
-          auth: getAuthCookie(),
-          id: data!.id,
-        });
-      }
+      deleteTask();
     }
   };
 
@@ -163,11 +187,12 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
       <div className={css.text}>
         <TextareaAutosize
           autoFocus={
-            data != null && (data.id == "" || data.updatedby == props.id)
+            data != null && (data.ownerid == "" || data.updatedby == props.id)
           }
           required={data != null}
           placeholder="An awesome task"
           value={data?.text}
+          onKeyDown={onKeyDown}
           onChange={onTextChange}
           onBlur={onBlur}
         />

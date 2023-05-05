@@ -31,7 +31,7 @@ export default class TasksSQL {
       [ownerid]
     )) as any;
 
-    return data[0]?.listorder as number | undefined;
+    return data[0]?.listorder as string | undefined;
   }
 
   static async delete(id: string) {
