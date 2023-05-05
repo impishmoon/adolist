@@ -24,6 +24,9 @@ const SocketSetTaskChecked = async (
 
   await TasksSQL.setChecked(data.id, data.checked);
   await TasksSQL.setUpdatedBy(data.id, user.id);
+  if (data.checked) {
+    await TasksSQL.setLastChecked(data.id, Date.now(), user.id);
+  }
 
   io.to(task.ownerid)
     .except(socket.id)

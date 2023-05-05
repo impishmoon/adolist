@@ -25,6 +25,8 @@ const SocketCreateBoard = async (
   );
   await TasksSQL.createMultiple(boardId, user.id, data.data.tasks);
 
+  socket.join(boardId);
+
   const userSockets = getUserSockets(user.id);
   if (userSockets) {
     const newBoards = await getBoardsForClient(user.id);

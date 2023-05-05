@@ -62,6 +62,23 @@ export default class TasksSQL {
     );
   }
 
+  static async setLastChecked(
+    id: string,
+    lastchecked: number,
+    lastcheckedby: string
+  ) {
+    await psqlUpdate(
+      "tasks",
+      {
+        lastchecked,
+        lastcheckedby,
+      },
+      {
+        id,
+      }
+    );
+  }
+
   static async setChecked(id: string, checked: boolean) {
     await psqlUpdate(
       "tasks",
@@ -89,6 +106,8 @@ export default class TasksSQL {
         ownerid,
         timecreated: Date.now(),
         timeupdated: Date.now(),
+        lastchecked: undefined,
+        lastcheckedby: undefined,
         updatedby,
         listorder: index,
       }))
