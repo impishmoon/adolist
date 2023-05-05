@@ -11,19 +11,6 @@ export const getUserSockets = (userId: string) => {
   return socketUserIdMap.get(userId);
 };
 
-export const userSocketsEmit = <Ev extends EventNames<SocketListenEvents>>(
-  userId: string,
-  event: Ev,
-  ...args: Parameters<SocketListenEvents[Ev]>
-) => {
-  const sockets = getUserSockets(userId);
-  if (!sockets) return;
-
-  for (const socket of sockets) {
-    (socket.emit as any)(event, args);
-  }
-};
-
 export const processUserSocket = (
   userId: string,
   socket: Socket<SocketEmitEvents, SocketListenEvents>
