@@ -3,8 +3,8 @@ import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Server, Socket } from "socket.io";
-import { getUserSockets } from "./setAccount";
 import { checkBoardAccess, getBoardsForClient } from "@/serverlib/essentials";
+import { getUserSockets } from "../userSocketsMap";
 
 const SocketUnshareBoardWithUser = async (
   io: Server<SocketEmitEvents, SocketListenEvents>,
