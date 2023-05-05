@@ -17,11 +17,21 @@ export default class BoardsSQL {
   }
 
   static async getByOwnerId(id: string) {
-    const data = (await psqlQuery("SELECT * FROM boards WHERE ownerid=$1", [
-      id,
-    ])) as any;
+    const data = (await psqlQuery(
+      "SELECT * FROM boards WHERE ownerid=$1 ORDER BY listorder",
+      [id]
+    )) as any;
 
     return data as BoardType[];
+  }
+
+  static async getLast(ownerid: string) {
+    const data = (await psqlQuery(
+      "SELECT * FROM boards WHERE ownerid=$1 ORDER BY listorder DESC",
+      [ownerid]
+    )) as any;
+
+    return data[0]?.listorder as number | undefined;
   }
 
   static async setName(id: string, name: string) {
@@ -42,13 +52,14 @@ export default class BoardsSQL {
     });
   }
 
-  static async create(ownerid: string, name: string) {
+  static async create(ownerid: string, name: string, listorder: number) {
     const newId = randomId();
 
     await psqlInsert("boards", {
       id: newId,
       ownerid,
       name,
+      listorder,
       timecreated: Date.now(),
       timeupdated: Date.now(),
     });

@@ -48,6 +48,8 @@ export const psqlInsertMultiple = async (
   table: string,
   values: { [test: string]: AcceptedTypes }[]
 ) => {
+  if (values.length == 0) return;
+
   let valuesFillin = [];
   let valuesValues: any[] = [];
 

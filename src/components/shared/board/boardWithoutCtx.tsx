@@ -131,7 +131,9 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
           {createBoard && (
             <CardActions>
               <Grid container justifyContent={"space-between"}>
-                <Button type="submit">Create</Button>
+                <Button type="submit" color="success">
+                  Create
+                </Button>
                 <Button type="reset" color="warning" onClick={onCancel}>
                   Cancel
                 </Button>

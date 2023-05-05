@@ -25,7 +25,7 @@ export default class TasksSQL {
     return data;
   }
 
-  static async getLastTask(ownerid: string) {
+  static async getLast(ownerid: string) {
     const data = (await psqlQuery(
       "SELECT * FROM tasks WHERE ownerid=$1 ORDER BY listorder DESC",
       [ownerid]

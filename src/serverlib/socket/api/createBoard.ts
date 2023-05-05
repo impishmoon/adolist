@@ -15,7 +15,14 @@ const SocketCreateBoard = async (
   const user = await UsersSQL.getById(session.id);
   if (!user) return;
 
-  const boardId = await BoardsSQL.create(user.id, data.data.name);
+  const lastBoardListOrder = await BoardsSQL.getLast(user.id);
+  if (lastBoardListOrder === undefined) return;
+
+  const boardId = await BoardsSQL.create(
+    user.id,
+    data.data.name,
+    lastBoardListOrder + 1
+  );
   await TasksSQL.createMultiple(boardId, user.id, data.data.tasks);
 
   socket.emit("setBoards", await getBoardsForClient(user.id));

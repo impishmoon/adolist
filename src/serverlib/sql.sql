@@ -11,6 +11,7 @@ CREATE TABLE "boards" (
 	"id" VARCHAR(16) NOT NULL,
 	"ownerid" VARCHAR(16) NOT NULL,
 	"name" VARCHAR(128) NOT NULL,
+	"listorder" NUMERIC NOT NULL,
 	"timecreated" NUMERIC NOT NULL,
 	"timeupdated" NUMERIC NOT NULL,
 	PRIMARY KEY ("id"),
