@@ -33,7 +33,6 @@ const SocketContextProvider: FC<Props> = ({ children }) => {
       if ("account" in cookies) {
         socket.emit("setAccount", { accountToken: cookies.account });
       }
-      console.log("socket connected");
     });
 
     setSocket(socket);

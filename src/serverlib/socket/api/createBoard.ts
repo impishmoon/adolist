@@ -6,7 +6,7 @@ import CreateBoardData from "@/types/api/createBoard";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { getBoardsForClient } from "@/serverlib/essentials";
 import { Socket } from "socket.io";
-import { userSocketsEmit } from "../userSocketsMap";
+import { getUserSockets } from "../userSocketsMap";
 
 const SocketCreateBoard = async (
   socket: Socket<SocketEmitEvents, SocketListenEvents>,
@@ -25,7 +25,13 @@ const SocketCreateBoard = async (
   );
   await TasksSQL.createMultiple(boardId, user.id, data.data.tasks);
 
-  userSocketsEmit(user.id, "setBoards", await getBoardsForClient(user.id));
+  const userSockets = getUserSockets(user.id);
+  if (userSockets) {
+    const newBoards = await getBoardsForClient(user.id);
+    for (const userSocket of userSockets) {
+      userSocket.emit("setBoards", newBoards);
+    }
+  }
 };
 
 export default SocketCreateBoard;
