@@ -5,10 +5,10 @@ import {
   CardContent,
   Grid,
   IconButton,
+  TextareaAutosize,
 } from "@mui/material";
 import { ChangeEvent, FC, useState } from "react";
 import css from "./boardWithoutCtx.module.scss";
-import Input from "@/components/shared/input";
 import List from "@/components/shared/board/list";
 import BoardType from "@/types/client/board/board";
 import { getDefaultData, useBoard } from "@/components/contexts/board";
@@ -49,7 +49,7 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
 
   const isUsingForcedData = createBoard;
 
-  const onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const onNameChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (isUsingForcedData) {
       const newForcedData = { ...forcedData };
       newForcedData.name = e.target.value;
@@ -80,23 +80,32 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
 
   const useData = isUsingForcedData ? forcedData : data;
 
+  const renderShareButton = () => {
+    if (useData != null && useData.ownerid != props.id) {
+      return null;
+    }
+
+    return (
+      <IconButton aria-label="send" size="small" onClick={onShareClick}>
+        <SendIcon fontSize="small" />
+      </IconButton>
+    );
+  };
+
   return (
     <>
       <form className={css.root} onSubmit={onSubmit}>
         <Card key={useData?.id} variant="outlined">
           <CardContent>
             <div className={css.header}>
-              <Input
+              <TextareaAutosize
                 className={css.input}
                 required
-                type="text"
                 placeholder="Title"
                 value={useData?.name}
                 onChange={onNameChange}
               />
-              <IconButton aria-label="send" size="small" onClick={onShareClick}>
-                <SendIcon fontSize="small" />
-              </IconButton>
+              {renderShareButton()}
             </div>
             <div>
               {useData && <List data={useData} boardId={useData?.id} />}

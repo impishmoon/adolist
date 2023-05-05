@@ -1,15 +1,12 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
-import BoardsSQL from "@/serverlib/sql-classes/boards";
 import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
-import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
-import BoardType from "@/types/client/board/board";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Server, Socket } from "socket.io";
 import { getUserSockets } from "./setAccount";
 import { getBoardsForClient } from "@/serverlib/essentials";
 
-const SocketShareBoardWithUser = async (
+const SocketUnshareBoardWithUser = async (
   io: Server<SocketEmitEvents, SocketListenEvents>,
   socket: Socket<SocketEmitEvents, SocketListenEvents>,
   auth: string,
@@ -20,7 +17,7 @@ const SocketShareBoardWithUser = async (
   const user = await UsersSQL.getById(session.id);
 
   if (user) {
-    await BoardSharesSQL.create(boardId, userId);
+    await BoardSharesSQL.delete(boardId, userId);
 
     socket.emit(
       "setBoardSharedUsers",
@@ -35,10 +32,10 @@ const SocketShareBoardWithUser = async (
       for (const userSocket of userSockets) {
         userSocket.emit("setBoards", userBoards);
 
-        userSocket.join(boardId);
+        userSocket.leave(boardId);
       }
     }
   }
 };
 
-export default SocketShareBoardWithUser;
+export default SocketUnshareBoardWithUser;

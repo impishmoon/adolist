@@ -5,10 +5,10 @@ import UsersSQL from "@/serverlib/sql-classes/users";
 import CreateTaskData from "@/types/api/createTask";
 import BoardType from "@/types/client/board/board";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 const SocketCreateTask = async (
-  socket: Socket<SocketEmitEvents, SocketListenEvents>,
+  io: Server<SocketEmitEvents, SocketListenEvents>,
   data: CreateTaskData
 ) => {
   const session = decryptAccountToken(data.auth);
@@ -24,7 +24,7 @@ const SocketCreateTask = async (
   await TasksSQL.create(data.boardId, user.id, lastTaskListOrder + 1);
 
   const result = await TasksSQL.getByOwnerId(data.boardId);
-  socket.emit("setTasks", data.boardId, result);
+  io.to(data.boardId).emit("setTasks", data.boardId, result);
 };
 
 export default SocketCreateTask;

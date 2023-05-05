@@ -21,6 +21,15 @@ export default class BoardSharesSQL {
     return data as UserType[];
   }
 
+  static async getSharedWithBoards(userid: string) {
+    const data = (await psqlQuery(
+      "SELECT boards.* FROM boards INNER JOIN boardshares ON boards.id = boardshares.boardid WHERE boardshares.userid=$1",
+      [userid]
+    )) as any;
+
+    return data as BoardType[];
+  }
+
   static async searchForUsersWithoutBoard(searchText: string, userId: string) {
     const data = (await psqlQuery(
       "SELECT users.id, users.username FROM users WHERE users.username LIKE $1 AND users.id != $2",
@@ -43,9 +52,10 @@ export default class BoardSharesSQL {
     return data as UserType[];
   }
 
-  static async delete(id: string) {
+  static async delete(boardid: string, userid: string) {
     await psqlDelete("boardshares", {
-      id,
+      boardid,
+      userid,
     });
   }
 

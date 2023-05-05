@@ -66,6 +66,12 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
     socket.emit("shareBoardWithUser", getAuthCookie(), board.id, userId);
   };
 
+  const onRemoveUser = async (userId: string) => {
+    if (socket == null) return;
+
+    socket.emit("unshareBoardWithUser", getAuthCookie(), board.id, userId);
+  };
+
   const renderSearchedUsers = searchedUsers.map((user) => {
     return (
       <ListItem key={user.id} disableGutters>
@@ -84,6 +90,23 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
       </ListItem>
     );
   });
+
+  const renderSharedUsers = board.shares.map((user) => (
+    <ListItem key={user.id} disableGutters>
+      <ListItemButton
+        onClick={() => {
+          onRemoveUser(user.id);
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
+            <PersonIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary={user.username} />
+      </ListItemButton>
+    </ListItem>
+  ));
 
   return (
     <Dialog
@@ -108,20 +131,7 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
           </Grid>
           <Grid item xs={6}>
             <Typography align="center">Existing users</Typography>
-            <List sx={{ pt: 0 }}>
-              {board.shares.map((user) => (
-                <ListItem key={user.id} disableGutters>
-                  <ListItemButton onClick={() => {}}>
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                        <PersonIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={user.username} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
+            <List sx={{ pt: 0 }}>{renderSharedUsers}</List>
           </Grid>
         </Grid>
       </DialogContent>

@@ -11,6 +11,7 @@ import TaskType from "./client/board/task";
 import LoginData from "./api/login";
 import DeleteTaskData from "./api/deleteTask";
 import DeleteBoardData from "./api/deleteBoard";
+import UserType from "./client/board/user";
 
 export interface SocketEmitEvents {
   login: (data: LoginData) => void;
@@ -36,6 +37,7 @@ export interface SocketListenEvents {
 
   setBoards: (data: BoardType[]) => void;
   setBoardName: (id: string, name: string) => void;
+  setBoardSharedUsers: (id: string, users: UserType[]) => void;
 
   setTasks: (boardId: string, tasks: TaskType[]) => void;
   setTaskText: (boardId: string, id: string, text: string) => void;

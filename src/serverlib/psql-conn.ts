@@ -100,7 +100,7 @@ export const psqlUpdate = async (
 
   let query = `UPDATE ${table} SET ${updateValues.join(
     ", "
-  )} WHERE ${whereValues.join(", ")}`;
+  )} WHERE ${whereValues.join(" AND ")}`;
 
   await psqlQuery(query, finalValues);
 };
@@ -120,7 +120,7 @@ export const psqlDelete = async (
     finalValues.push(value);
   }
 
-  let query = `DELETE FROM ${table} WHERE ${whereValues.join(", ")}`;
+  let query = `DELETE FROM ${table} WHERE ${whereValues.join(" AND ")}`;
 
   await psqlQuery(query, finalValues);
 };

@@ -1,5 +1,6 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import SetAccountData from "@/types/api/setAccount";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Socket } from "socket.io";
@@ -9,6 +10,10 @@ export const socketUserIdMap = new Map<
   string,
   Socket<SocketEmitEvents, SocketListenEvents>[]
 >();
+
+export const getUserSockets = (userId: string) => {
+  return socketUserIdMap.get(userId);
+};
 
 const SocketSetAccount = async (
   socket: Socket<SocketEmitEvents, SocketListenEvents>,
@@ -38,9 +43,12 @@ const SocketSetAccount = async (
     });
 
     const ownedBoards = await BoardsSQL.getByOwnerId(session.id);
-    //const sharedWithBoards = await BoardSharesSQL.getb //TODO: get all boards that this user is shared with, too tired to program it right now
+    const sharedWithBoards = await BoardSharesSQL.getSharedWithBoards(
+      session.id
+    );
+    const allBoards = [...ownedBoards, ...sharedWithBoards];
 
-    for (const board of ownedBoards) {
+    for (const board of allBoards) {
       socket.join(board.id);
     }
   }

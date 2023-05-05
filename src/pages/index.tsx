@@ -11,34 +11,31 @@ import TasksSQL from "@/serverlib/sql-classes/tasks";
 import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import IndexProps, { IndexPropsType } from "@/types/indexProps";
 import { useSocket } from "@/components/contexts/socket";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
+import { getBoardsForClient } from "@/serverlib/essentials";
+import createListeners from "@/clientlib/pages/index/socketListeners";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getLoginSession(context.req);
 
+  let id: string | null = null;
   let username: string | null = null;
   let boards: BoardType[] | null = null;
 
   if (session?.id != null) {
     const account = await UsersSQL.getById(session.id);
 
+    id = account.id;
     username = account.username;
-    boards = [];
-    const serverBoards = await BoardsSQL.getByOwnerId(account.id);
-    for (const serverBoard of serverBoards) {
-      boards.push({
-        ...serverBoard,
-        tasks: await TasksSQL.getByOwnerId(serverBoard.id),
-        shares: await BoardSharesSQL.getUserShares(serverBoard.id),
-      });
-    }
+    boards = await getBoardsForClient(session.id);
   }
 
   return {
     props: {
+      id,
       username,
       boards,
     },
@@ -50,76 +47,12 @@ const Page: NextPage<IndexProps> = () => {
   const { props, setProps }: IndexPropsType = useSSRFetcher();
   const { boards } = props;
 
-  useEffect(() => {
-    if (!socket) return;
+  const memoizedCreateListeners = useMemo(
+    () => createListeners(socket, props, setProps),
+    [socket, props, setProps]
+  );
 
-    socket.on("setBoards", (boards) => {
-      const newProps = { ...props };
-
-      newProps.boards = boards;
-
-      setProps(newProps);
-    });
-
-    socket.on("setTasks", (boardId, tasks) => {
-      const newProps = { ...props };
-
-      const foundBoard = newProps.boards?.find((board) => board.id === boardId);
-      if (!foundBoard) return;
-
-      foundBoard.tasks = tasks;
-
-      setProps(newProps);
-    });
-
-    socket.on("setBoardName", (id, name) => {
-      const newProps = { ...props };
-
-      const foundBoard = newProps.boards?.find((board) => board.id === id);
-      if (!foundBoard) return;
-
-      foundBoard.name = name;
-
-      setProps(newProps);
-    });
-
-    socket.on("setTaskText", (boardId, id, text) => {
-      const newProps = { ...props };
-
-      const foundBoard = newProps.boards?.find((board) => board.id === boardId);
-      if (!foundBoard) return;
-
-      const foundTask = foundBoard.tasks.find((task) => task.id == id);
-      if (!foundTask) return;
-
-      foundTask.text = text;
-
-      setProps(newProps);
-    });
-
-    socket.on("setTaskChecked", (boardId, id, checked) => {
-      const newProps = { ...props };
-
-      const foundBoard = newProps.boards?.find((board) => board.id === boardId);
-      if (!foundBoard) return;
-
-      const foundTask = foundBoard.tasks.find((task) => task.id == id);
-      if (!foundTask) return;
-
-      foundTask.checked = checked;
-
-      setProps(newProps);
-    });
-
-    return () => {
-      socket.off("setBoards");
-      socket.off("setBoardName");
-
-      socket.off("setTasks");
-      socket.off("setTaskText");
-      socket.off("setTaskChecked");
-    };
-  }, [props, setProps, socket]);
+  useEffect(memoizedCreateListeners, [memoizedCreateListeners]);
 
   const renderBoards = boards?.map((board) => {
     return (

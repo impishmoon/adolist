@@ -19,7 +19,6 @@ const SocketSetBoardName = async (
     await BoardsSQL.setName(data.id, data.name);
 
     io.to(data.id).except(socket.id).emit("setBoardName", data.id, data.name);
-    //TODO: Send board update to all sockets belonging to users that can see the board
   }
 };
 

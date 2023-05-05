@@ -1,6 +1,7 @@
 import BoardType from "./client/board/board";
 
 type IndexProps = {
+  id?: string;
   username?: string;
   boards?: BoardType[];
 };

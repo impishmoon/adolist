@@ -162,7 +162,7 @@ const ListItem: FC<Props> = ({ data, boardId }) => {
       <div className={css.sideItem}>{renderSideItem()}</div>
       <div className={css.text}>
         <TextareaAutosize
-          autoFocus={data != null}
+          autoFocus={data != null && data.updatedby == props.id}
           required={data != null}
           placeholder="An awesome task"
           value={data?.text}
