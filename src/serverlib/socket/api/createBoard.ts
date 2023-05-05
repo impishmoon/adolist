@@ -15,8 +15,7 @@ const SocketCreateBoard = async (
   const user = await UsersSQL.getById(session.id);
   if (!user) return;
 
-  const lastBoardListOrder = await BoardsSQL.getLast(user.id);
-  if (lastBoardListOrder === undefined) return;
+  const lastBoardListOrder = (await BoardsSQL.getLast(user.id)) ?? 0;
 
   const boardId = await BoardsSQL.create(
     user.id,
