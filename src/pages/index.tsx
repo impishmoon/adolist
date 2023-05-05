@@ -60,7 +60,7 @@ const Page: NextPage<IndexProps> = () => {
 
     return (
       <Grid container justifyContent="center">
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <Typography align="center" fontSize={26}>
             Welcome to ADoList!
           </Typography>
