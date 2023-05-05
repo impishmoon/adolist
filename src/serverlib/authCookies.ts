@@ -10,9 +10,9 @@ export function setTokenCookie(res: NextApiResponse, token: string) {
     // maxAge: MAX_AGE,
     expires: new Date(Date.now() + MAX_AGE * 1000), //only session test...
     httpOnly: false,
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //process.env.NODE_ENV === "production",
     path: "/",
-    sameSite: "lax",
+    sameSite: "strict",
   });
 
   res.setHeader("Set-Cookie", cookie);
