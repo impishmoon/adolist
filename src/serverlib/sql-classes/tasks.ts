@@ -50,6 +50,18 @@ export default class TasksSQL {
     );
   }
 
+  static async setUpdatedBy(id: string, updatedby: string) {
+    await psqlUpdate(
+      "tasks",
+      {
+        updatedby,
+      },
+      {
+        id,
+      }
+    );
+  }
+
   static async setChecked(id: string, checked: boolean) {
     await psqlUpdate(
       "tasks",

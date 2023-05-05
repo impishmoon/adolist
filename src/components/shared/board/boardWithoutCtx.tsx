@@ -17,7 +17,9 @@ import getAuthCookie from "@/clientlib/getAuthCookie";
 import { useSSRFetcher } from "@/components/contexts/ssrFetcher";
 import { IndexPropsType } from "@/types/indexProps";
 import SendIcon from "@mui/icons-material/Send";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ShareModal from "./shareModal";
+import DeleteModal from "./deleteModal";
 
 export type Props = {
   data?: BoardType;
@@ -30,6 +32,7 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
   const { control, handleSubmit } = formData;
 
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const onSubmit = handleSubmit(async (data) => {
     //dont use data because we are dealing with a dynamic form and i cant be bothered to figure out how to make react-form-hook work with a dynamic number of inputs
@@ -78,17 +81,31 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
     setShowShareModal(true);
   };
 
+  const onDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
   const useData = isUsingForcedData ? forcedData : data;
 
-  const renderShareButton = () => {
+  const renderOwnerButtons = () => {
     if (useData != null && useData.ownerid != props.id) {
       return null;
     }
 
     return (
-      <IconButton aria-label="send" size="small" onClick={onShareClick}>
-        <SendIcon fontSize="small" />
-      </IconButton>
+      <>
+        <IconButton aria-label="send" size="small" onClick={onShareClick}>
+          <SendIcon fontSize="small" />
+        </IconButton>
+        <IconButton
+          color="warning"
+          aria-label="delete"
+          size="small"
+          onClick={onDeleteClick}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      </>
     );
   };
 
@@ -105,7 +122,7 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
                 value={useData?.name}
                 onChange={onNameChange}
               />
-              {renderShareButton()}
+              {renderOwnerButtons()}
             </div>
             <div>
               {useData && <List data={useData} boardId={useData?.id} />}
@@ -124,11 +141,18 @@ const BoardWithoutCtx: FC<Props> = ({ data }) => {
         </Card>
       </form>
       {useData && (
-        <ShareModal
-          board={useData}
-          open={showShareModal}
-          onClose={() => setShowShareModal(false)}
-        />
+        <>
+          <ShareModal
+            board={useData}
+            open={showShareModal}
+            onClose={() => setShowShareModal(false)}
+          />
+          <DeleteModal
+            board={useData}
+            open={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+          />
+        </>
       )}
     </>
   );

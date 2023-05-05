@@ -56,7 +56,7 @@ const Page: NextPage<IndexProps> = () => {
 
   const renderBoards = boards?.map((board) => {
     return (
-      <Grid key={board.id} item xs={6} lg={3}>
+      <Grid key={board.id} item xs={6} lg={4}>
         <Board data={board} />
       </Grid>
     );

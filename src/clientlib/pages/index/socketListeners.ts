@@ -41,6 +41,14 @@ const createListeners = (
       setProps(newProps);
     });
 
+    socket.on("deleteBoard", (id) => {
+      const newProps = { ...props };
+
+      newProps.boards = newProps.boards!.filter((board) => board.id != id);
+
+      setProps(newProps);
+    });
+
     socket.on("setTasks", (boardId, tasks) => {
       const newProps = { ...props };
 
@@ -84,6 +92,7 @@ const createListeners = (
       socket.off("setBoards");
       socket.off("setBoardName");
       socket.off("setBoardSharedUsers");
+      socket.off("deleteBoard");
 
       socket.off("setTasks");
       socket.off("setTaskText");

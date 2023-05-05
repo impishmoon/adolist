@@ -1,4 +1,7 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
+import { checkBoardAccess } from "@/serverlib/essentials";
+import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import DeleteTaskData from "@/types/api/deleteTask";
@@ -15,6 +18,8 @@ const SocketDeleteTask = async (
 
   const task = await TasksSQL.getById(data.id);
   if (!task) return;
+
+  if (!checkBoardAccess(user.id, task.ownerid)) return;
 
   await TasksSQL.delete(data.id);
 

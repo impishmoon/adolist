@@ -7,7 +7,7 @@ import BoardType from "@/types/client/board/board";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Server, Socket } from "socket.io";
 import { getUserSockets } from "./setAccount";
-import { getBoardsForClient } from "@/serverlib/essentials";
+import { checkBoardAccess, getBoardsForClient } from "@/serverlib/essentials";
 
 const SocketShareBoardWithUser = async (
   io: Server<SocketEmitEvents, SocketListenEvents>,
@@ -18,25 +18,26 @@ const SocketShareBoardWithUser = async (
 ) => {
   const session = decryptAccountToken(auth);
   const user = await UsersSQL.getById(session.id);
+  if (!user) return;
 
-  if (user) {
-    await BoardSharesSQL.create(boardId, userId);
+  if (!checkBoardAccess(userId, boardId)) return;
 
-    socket.emit(
-      "setBoardSharedUsers",
-      boardId,
-      await BoardSharesSQL.getUserShares(boardId)
-    );
+  await BoardSharesSQL.create(boardId, userId);
 
-    const userBoards = await getBoardsForClient(userId);
+  socket.emit(
+    "setBoardSharedUsers",
+    boardId,
+    await BoardSharesSQL.getUserShares(boardId)
+  );
 
-    const userSockets = getUserSockets(userId);
-    if (userSockets) {
-      for (const userSocket of userSockets) {
-        userSocket.emit("setBoards", userBoards);
+  const userBoards = await getBoardsForClient(userId);
 
-        userSocket.join(boardId);
-      }
+  const userSockets = getUserSockets(userId);
+  if (userSockets) {
+    for (const userSocket of userSockets) {
+      userSocket.emit("setBoards", userBoards);
+
+      userSocket.join(boardId);
     }
   }
 };

@@ -20,3 +20,15 @@ export const getBoardsForClient = async (userId: string) => {
 
   return result;
 };
+
+export const checkBoardAccess = async (userId: string, boardId: string) => {
+  const board = await BoardsSQL.getById(boardId);
+  if (!board) return false;
+
+  const boardSharedWith = await BoardSharesSQL.getUserShares(board.id);
+
+  return (
+    board.ownerid == userId ||
+    boardSharedWith.find((sharedUser) => sharedUser.id == userId) != null
+  );
+};

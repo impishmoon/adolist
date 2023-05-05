@@ -1,4 +1,7 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
+import { checkBoardAccess } from "@/serverlib/essentials";
+import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import SetTaskTextData from "@/types/api/setTaskText";
@@ -12,16 +15,19 @@ const SocketSetTaskText = async (
 ) => {
   const session = decryptAccountToken(data.auth);
   const user = await UsersSQL.getById(session.id);
+  if (!user) return;
 
-  if (user) {
-    const task = await TasksSQL.getById(data.id);
-    await TasksSQL.setText(data.id, data.text);
+  const task = await TasksSQL.getById(data.id);
+  if (!task) return;
 
-    io.to(task.ownerid)
-      .except(socket.id)
-      .emit("setTaskText", task.ownerid, data.id, data.text);
-    //TODO: Send task update to all sockets belonging to users that can see the task's board
-  }
+  if (!checkBoardAccess(user.id, task.ownerid)) return;
+
+  await TasksSQL.setText(data.id, data.text);
+  await TasksSQL.setUpdatedBy(data.id, user.id);
+
+  io.to(task.ownerid)
+    .except(socket.id)
+    .emit("setTaskText", task.ownerid, data.id, data.text);
 };
 
 export default SocketSetTaskText;

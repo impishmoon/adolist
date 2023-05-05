@@ -1,22 +1,26 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
+import { checkBoardAccess } from "@/serverlib/essentials";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
 import UsersSQL from "@/serverlib/sql-classes/users";
-import DeleteBoardData from "@/types/api/deleteBoard";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
-import { Socket } from "socket.io";
+import { Server } from "socket.io";
 
 const SocketDeleteBoard = async (
-  socket: Socket<SocketEmitEvents, SocketListenEvents>,
-  data: DeleteBoardData
+  io: Server<SocketEmitEvents, SocketListenEvents>,
+  auth: string,
+  boardId: string
 ) => {
-  const session = decryptAccountToken(data.auth);
+  const session = decryptAccountToken(auth);
+
   const user = await UsersSQL.getById(session.id);
+  if (!user) return;
 
-  if (user) {
-    await BoardsSQL.delete(data.id);
+  const board = BoardsSQL.getById(boardId);
+  if (!board) return;
 
-    //TODO: Send task update to all sockets belonging to users that can see the task's board
-  }
+  await BoardsSQL.delete(boardId);
+
+  io.to(boardId).emit("deleteBoard", boardId);
 };
 
 export default SocketDeleteBoard;

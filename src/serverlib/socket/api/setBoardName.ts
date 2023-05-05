@@ -1,5 +1,7 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
+import { checkBoardAccess } from "@/serverlib/essentials";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import SetBoardNameData from "@/types/api/setBoardName";
@@ -14,12 +16,13 @@ const SocketSetBoardName = async (
 ) => {
   const session = decryptAccountToken(data.auth);
   const user = await UsersSQL.getById(session.id);
+  if (!user) return;
 
-  if (user) {
-    await BoardsSQL.setName(data.id, data.name);
+  if (!checkBoardAccess(user.id, data.id)) return;
 
-    io.to(data.id).except(socket.id).emit("setBoardName", data.id, data.name);
-  }
+  await BoardsSQL.setName(data.id, data.name);
+
+  io.to(data.id).except(socket.id).emit("setBoardName", data.id, data.name);
 };
 
 export default SocketSetBoardName;

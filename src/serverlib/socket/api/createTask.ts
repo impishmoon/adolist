@@ -1,5 +1,7 @@
 import { decryptAccountToken, getToken } from "@/serverlib/auth";
+import { checkBoardAccess } from "@/serverlib/essentials";
 import BoardsSQL from "@/serverlib/sql-classes/boards";
+import BoardSharesSQL from "@/serverlib/sql-classes/boardshares";
 import TasksSQL from "@/serverlib/sql-classes/tasks";
 import UsersSQL from "@/serverlib/sql-classes/users";
 import CreateTaskData from "@/types/api/createTask";
@@ -15,8 +17,7 @@ const SocketCreateTask = async (
   const user = await UsersSQL.getById(session.id);
   if (!user) return;
 
-  const board = await BoardsSQL.getById(data.boardId);
-  if (!board) return;
+  if (!checkBoardAccess(user.id, data.boardId)) return;
 
   const lastTaskListOrder = await TasksSQL.getLastTask(data.boardId);
   if (lastTaskListOrder === undefined) return;

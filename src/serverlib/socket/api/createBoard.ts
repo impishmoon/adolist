@@ -13,13 +13,12 @@ const SocketCreateBoard = async (
 ) => {
   const session = decryptAccountToken(data.auth);
   const user = await UsersSQL.getById(session.id);
+  if (!user) return;
 
-  if (user) {
-    const boardId = await BoardsSQL.create(user.id, data.data.name);
-    await TasksSQL.createMultiple(boardId, user.id, data.data.tasks);
+  const boardId = await BoardsSQL.create(user.id, data.data.name);
+  await TasksSQL.createMultiple(boardId, user.id, data.data.tasks);
 
-    socket.emit("setBoards", await getBoardsForClient(user.id));
-  }
+  socket.emit("setBoards", await getBoardsForClient(user.id));
 };
 
 export default SocketCreateBoard;

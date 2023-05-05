@@ -40,7 +40,9 @@ const SocketAddListeners = (
       );
 
       socket.on("deleteTask", (data) => SocketDeleteTask(io, data));
-      socket.on("deleteBoard", (data) => SocketDeleteBoard(socket, data));
+      socket.on("deleteBoard", (auth, boardId) =>
+        SocketDeleteBoard(io, auth, boardId)
+      );
     }
   );
 };
