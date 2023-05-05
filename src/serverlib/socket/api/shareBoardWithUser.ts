@@ -6,8 +6,8 @@ import UsersSQL from "@/serverlib/sql-classes/users";
 import BoardType from "@/types/client/board/board";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Server, Socket } from "socket.io";
-import { getUserSockets } from "./setAccount";
 import { checkBoardAccess, getBoardsForClient } from "@/serverlib/essentials";
+import { getUserSockets } from "../userSocketsMap";
 
 const SocketShareBoardWithUser = async (
   io: Server<SocketEmitEvents, SocketListenEvents>,

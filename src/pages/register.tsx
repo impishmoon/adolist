@@ -1,6 +1,13 @@
+import { useState } from "react";
 import LayoutContainer from "@/components/layout/container";
 import Router from "next/router";
-import { Button, FormControl, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  TextField,
+  Typography,
+  Alert,
+} from "@mui/material";
 import Link from "next/link";
 import css from "./register.module.scss";
 import { useForm, Controller } from "react-hook-form";
@@ -16,6 +23,8 @@ const RegisterPage = () => {
   const { socket } = useSocket();
   const { control, handleSubmit } = useForm<FormData>();
 
+  const [error, setError] = useState("");
+
   const onSubmit = handleSubmit(async (data) => {
     if (!socket) {
       return;
@@ -30,6 +39,8 @@ const RegisterPage = () => {
         });
 
         Router.push("/");
+      } else {
+        setError(response.error);
       }
     });
 
@@ -75,6 +86,11 @@ const RegisterPage = () => {
               )}
             />
           </FormControl>
+          {error && (
+            <FormControl fullWidth margin="normal">
+              <Alert severity="error">{error}</Alert>
+            </FormControl>
+          )}
           <FormControl fullWidth margin="normal">
             <div className={css.buttons}>
               <Button type="submit" variant="contained" color="success">

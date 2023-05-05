@@ -74,7 +74,7 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
 
   const renderSearchedUsers = searchedUsers.map((user) => {
     return (
-      <ListItem key={user.id} disableGutters>
+      <ListItem key={user.id} disableGutters disablePadding>
         <ListItemButton
           onClick={() => {
             onAddUser(user.id);
@@ -92,7 +92,7 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
   });
 
   const renderSharedUsers = board.shares.map((user) => (
-    <ListItem key={user.id} disableGutters>
+    <ListItem key={user.id} disableGutters disablePadding>
       <ListItemButton
         onClick={() => {
           onRemoveUser(user.id);
@@ -119,7 +119,7 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
       <DialogTitle>Share with users</DialogTitle>
       <DialogContent>
         <Grid container>
-          <Grid item xs={6}>
+          <Grid item xs={6} padding={0.5}>
             <Typography align="center">New users</Typography>
             <TextField
               onChange={onSearchChange}
@@ -129,7 +129,7 @@ const ShareModal: FC<Props> = ({ open, onClose, board }) => {
             />
             <List sx={{ pt: 0 }}>{renderSearchedUsers}</List>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} padding={0.5}>
             <Typography align="center">Existing users</Typography>
             <List sx={{ pt: 0 }}>{renderSharedUsers}</List>
           </Grid>

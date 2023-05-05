@@ -3,6 +3,7 @@ import UsersSQL from "@/serverlib/sql-classes/users";
 import RegisterData from "@/types/api/register";
 import { SocketEmitEvents, SocketListenEvents } from "@/types/socketEvents";
 import { Socket } from "socket.io";
+import { processUserSocket } from "../userSocketsMap";
 
 const SocketRegister = async (
   socket: Socket<SocketEmitEvents, SocketListenEvents>,
@@ -29,6 +30,7 @@ const SocketRegister = async (
 
   // await setLoginSession(res, { id: newId });
   socket.data.accountId = newId;
+  processUserSocket(newId, socket);
 
   socket.emit("apiResponse", { error: undefined, data: "success" });
 };
